@@ -31,6 +31,7 @@ import java.util.List;
 public class CleanView extends Application {
 
     private ImageView pdfImageView;
+    private static String fileToOpen = null;
     private ScrollPane scrollPane;
     private float renderDPI = 150f; // Controls zoom
     private PDDocument document;
@@ -96,6 +97,24 @@ public class CleanView extends Application {
         fitImageToWidth(viewerWidth);
     }
 });
+
+
+if (fileToOpen != null) {
+    File pdfFile = new File(fileToOpen);
+    if (pdfFile.exists() && pdfFile.getName().endsWith(".pdf")) {
+        try {
+            if (document != null) {
+                document.close();
+            }
+            document = PDDocument.load(pdfFile);
+            renderer = new PDFRenderer(document);
+            currentPage = 0;
+            showPage(currentPage);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}
 
 
         searchButton.setOnAction(e -> {
@@ -393,6 +412,9 @@ public class CleanView extends Application {
     }
 
     public static void main(String[] args) {
+        if (args.length > 0) {
+        fileToOpen = args[0];
+     }
         launch(args);
     }
 }

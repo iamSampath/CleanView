@@ -4,10 +4,18 @@
   <groupId>com.sampath.pdfviewer</groupId>
   <artifactId>CleanView</artifactId>
   <name>CleanView</name>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <url>http://maven.apache.org</url>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>0.0.8</version>
+        <configuration>
+          <mainClass>com.sampath.pdfviewer.CleanView</mainClass>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.5.0</version>

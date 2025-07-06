@@ -1,0 +1,22 @@
+# IDEs
+.idea/
+.vscode/
+
+# Build artifacts
+target/
+*.class
+*.jar
+*.exe
+
+# Maven
+dependency-reduced-pom.xml
+
+# OS/system
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# Misc garbage files
+openPdf(primaryStage))
+showPage(currentPage
