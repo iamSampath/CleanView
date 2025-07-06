@@ -57,9 +57,12 @@
           <icon>src/main/resources/icon.ico</icon>
           <appVersion>1.0</appVersion>
           <vendor>Medarametla Solutions</vendor>
-          <description>JavaFX-based PDF viewer</description>
+          <description>Clean View PDF Viewer</description>
           <runtimeImage>${project.build.directory}/runtime</runtimeImage>
+          <licenseFile>src/main/resources/license.txt</licenseFile>
+          <winMenu>true</winMenu>
           <winShortcut>true</winShortcut>
+          <winMenuGroup>Pdf Tools</winMenuGroup>
         </configuration>
       </plugin>
     </plugins>
