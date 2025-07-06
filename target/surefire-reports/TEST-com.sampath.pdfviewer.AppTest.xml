@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.sampath.pdfviewer.AppTest" time="0.016" tests="1" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="E:\Apps\CleanView\target\test-classes;E:\Apps\CleanView\target\classes;C:\Users\smeda\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-controls\21\javafx-controls-21.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-controls\21\javafx-controls-21-win.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-graphics\21\javafx-graphics-21.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-graphics\21\javafx-graphics-21-win.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-base\21\javafx-base-21.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-base\21\javafx-base-21-win.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-swing\21\javafx-swing-21.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-swing\21\javafx-swing-21-win.jar;C:\Users\smeda\.m2\repository\org\apache\pdfbox\pdfbox\2.0.30\pdfbox-2.0.30.jar;C:\Users\smeda\.m2\repository\org\apache\pdfbox\fontbox\2.0.30\fontbox-2.0.30.jar;C:\Users\smeda\.m2\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="America/Chicago"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
+    <property name="sun.java.command" value="C:\Users\smeda\AppData\Local\Temp\surefire18150684495450469148\surefirebooter-20250706015006410_3.jar C:\Users\smeda\AppData\Local\Temp\surefire18150684495450469148 2025-07-06T01-50-06_316-jvmRun1 surefire-20250706015006410_1tmp surefire_0-20250706015006410_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="E:\Apps\CleanView\target\test-classes;E:\Apps\CleanView\target\classes;C:\Users\smeda\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-controls\21\javafx-controls-21.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-controls\21\javafx-controls-21-win.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-graphics\21\javafx-graphics-21.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-graphics\21\javafx-graphics-21-win.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-base\21\javafx-base-21.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-base\21\javafx-base-21-win.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-swing\21\javafx-swing-21.jar;C:\Users\smeda\.m2\repository\org\openjfx\javafx-swing\21\javafx-swing-21-win.jar;C:\Users\smeda\.m2\repository\org\apache\pdfbox\pdfbox\2.0.30\pdfbox-2.0.30.jar;C:\Users\smeda\.m2\repository\org\apache\pdfbox\fontbox\2.0.30\fontbox-2.0.30.jar;C:\Users\smeda\.m2\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\smeda"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-07-16"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-21"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="E:\Apps\CleanView"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\smeda\AppData\Local\Temp\surefire18150684495450469148\surefirebooter-20250706015006410_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.4+8-LTS-274"/>
+    <property name="user.name" value="smedarametla"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\smeda\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\smeda\AppData\Local\Temp\"/>
+    <property name="java.version" value="21.0.4"/>
+    <property name="user.dir" value="E:\Apps\CleanView"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-21\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;c:\Users\smeda\AppData\Local\Programs\cursor\resources\app\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.7.6-hotspot\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Java\jdk-21\bin;C:\sqlite3;C:\Program Files\MongoDB\Server\6.0\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Java\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;C:\Program Files\nodejs\;C:\Users\smeda\AppData\Local\Microsoft\WindowsApps;C:\Users\smeda\AppData\Local\GitHubDesktop\bin;C:\Program Files\JetBrains\DataGrip 2021.2.1\bin;C:\Users\smeda\AppData\Local\atom\bin;C:\Program Files\JetBrains\IntelliJ IDEA Educational Edition 2021.3.2\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2021.3.2\bin;C:\sqlite3;C:\Program Files\MongoDB\Server\6.0\bin;C:\Users\smeda\AppData\Local\Microsoft;C:\Program Files (x86)\WiX Toolset v3.11\bin;C:\Users\smeda\AppData\Local\Microsoft\WindowsApps;C:\Users\smeda\AppData\Local\GitHubDesktop\bin;C:\Program Files\JetBrains\DataGrip 2021.2.1\bin;C:\Users\smeda\AppData\Local\atom\bin;C:\Users\smeda\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\IntelliJ IDEA Educational Edition 2021.3.2\bin;;C:\Program Files\JetBrains\IntelliJ IDEA 2021.3.2\bin;;C:\sqlite3;C:\Program Files\MongoDB\Server\6.0\bin;C:\Users\smeda\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Java\apache-maven-3.9.9\bin;C:\Users\smeda\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\smeda\AppData\Roaming\npm;C:\Program Files (x86)\WiX Toolset v3.11\;;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="21.0.4+8-LTS-274"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="testApp" classname="com.sampath.pdfviewer.AppTest" time="0.003"/>
+</testsuite>
