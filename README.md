@@ -98,6 +98,19 @@ Output will be in: `target/installer`
 
 ---
 
+## 🖥️ Supported Platforms
+
+CleanView currently supports the following operating systems:
+
+| Platform     | Status        | Details                                      |
+|--------------|---------------|----------------------------------------------|
+| 🪟 Windows    | ✅ Supported   | Installer (.exe) available in [Releases](#)  |
+| 🍎 macOS      | 🔜 Coming Soon | `.dmg` version under active development       |
+| 🐧 Linux      | ❌ Not Supported | May be considered in future                 |
+
+> ℹ️ **Note:** CleanView is fully functional on Windows. macOS support is in progress and expected in a future update.
+
+
 ## 🧠 Author
 
 **Sampath Kumar Medarametla**  
