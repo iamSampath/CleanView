@@ -3,6 +3,10 @@
 **CleanView** is a modern, lightweight, and fast PDF viewer built using JavaFX and Apache PDFBox. Designed with clean aesthetics and high usability in mind, it provides essential PDF features without the clutter of bloated applications.
 
 ---
+<p align="center">
+  <img src="[https://raw.githubusercontent.com/iamSampath/CleanView/main/assets/logo.png](https://github.com/iamSampath/CleanView/blob/main/src/main/resources/icon.png)" alt="CleanView Logo" width="150"/>
+</p>
+
 
 ## ✨ Features
 
