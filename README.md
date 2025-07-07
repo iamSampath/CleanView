@@ -37,8 +37,26 @@
 - Can be launched from terminal or by double-clicking `.exe`
 - Supports setting CleanView as the default PDF viewer
 - Drag-and-drop support (in roadmap)
+- 
+## 🚀 Installation (End Users)
+
+### ✅ Option 1: Download from [Releases](https://github.com/iamSampath/CleanView/releases)
+
+1. Go to the [**Releases**](https://github.com/iamSampath/CleanView/releases) page.
+2. Download the latest `CleanView-1.0.exe` file.
+3. Double-click to launch the installer.
+4. Follow the installation prompts:
+   - Choose install location
+   - (Optional) Create a desktop shortcut
+   - (Optional) Set **CleanView** as the default PDF viewer
+
+> 💡 Once installed, you can open PDF files by double-clicking them or using “Open With → CleanView” from the file menu.
 
 ---
+
+### 🛠 Option 2: Manual Build (For Developers)
+
+If you'd like to build the application yourself please read the below instructions:
 
 ## 🧪 How to Build
 
@@ -82,3 +100,4 @@ Output will be in: `target/installer`
 **Sampath Kumar Medarametla**  
 📌 Program Manager  
 🔗 [linkedin.com/in/smedarametla](https://www.linkedin.com/in/smedarametla/)
+
