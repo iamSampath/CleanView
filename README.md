@@ -43,7 +43,7 @@
 ### ✅ Option 1: Download from [Releases](https://github.com/iamSampath/CleanView/releases)
 
 1. Go to the [**Releases**](https://github.com/iamSampath/CleanView/releases) page.
-2. Download and extract the latest `CleanView-1.0.exe` file in SourceCode.Zip.
+2. Download and extract the latest `CleanView-1.0.exe` file from SourceCode.Zip.
 3. Double-click to launch the installer.
 4. Follow the installation prompts:
    - Choose install location
