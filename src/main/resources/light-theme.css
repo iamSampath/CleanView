@@ -1,0 +1,35 @@
+.root {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #333333;
+}
+
+.button, .text-field, .tool-bar, .scroll-pane, #status-bar {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+
+}
+.text-field {
+    -fx-prompt-text-fill: #888888;
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #f4f4f4;
+}
+
+.tool-bar .button {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #333333;
+}
+
+#status-bar {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #333333;
+}
+
+.canvas {
+    -fx-background-color: transparent;
+}
+.status-bar-label {
+    -fx-text-fill: white;
+}

@@ -49,6 +49,7 @@
         </executions>
         <configuration>
           <name>CleanView</name>
+          <description>Clean View</description>
           <input>${project.build.directory}</input>
           <mainJar>CleanView-1.0.jar</mainJar>
           <mainClass>com.sampath.pdfviewer.CleanView</mainClass>
@@ -57,7 +58,6 @@
           <icon>src/main/resources/icon.ico</icon>
           <appVersion>1.0</appVersion>
           <vendor>Medarametla Solutions</vendor>
-          <description>Clean View PDF Viewer</description>
           <runtimeImage>${project.build.directory}/runtime</runtimeImage>
           <licenseFile>src/main/resources/license.txt</licenseFile>
           <winMenu>true</winMenu>
