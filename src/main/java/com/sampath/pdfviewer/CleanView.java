@@ -13,6 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -71,6 +73,8 @@ public class CleanView extends Application {
     private List<Rectangle2D.Float> highlights = new ArrayList<>();
     private String currentKeyword = "";
     private File currentFilePath;
+    private VBox leftSidebar;
+    private ListView<String> pageListView = new ListView<>();
     private Label statusLabel = new Label("Ready");
 
     @Override
@@ -272,6 +276,18 @@ public class CleanView extends Application {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
+        // 🔽 scroll listener for page navigation
+        scrollPane.setOnScroll(event -> {
+            if (event.isControlDown())
+                return;
+
+            if (event.getDeltaY() < 0) {
+                showPage(currentPage + 1);
+            } else if (event.getDeltaY() > 0) {
+                showPage(currentPage - 1);
+            }
+        });
+
         /*
          * Tab initialTab = new Tab("No File Open", scrollPane);
          * initialTab.setClosable(false);
@@ -299,9 +315,35 @@ public class CleanView extends Application {
         statusBar.setAlignment(Pos.CENTER_LEFT);
         statusBar.setId("status-bar");
         statusBar.setMinHeight(24);
+        pageListView = new ListView<>();
+        pageListView.setPrefWidth(160);
+        pageListView.setStyle("-fx-background-color: #F2F2F2;");
+
+        pageListView.getSelectionModel().selectedIndexProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.intValue() >= 0 && document != null) {
+                showPage(newVal.intValue());
+            }
+        });
+
+        leftSidebar = new VBox(new Label("Pages"), pageListView);
+        leftSidebar.setStyle("-fx-background-color: #ECECEC; -fx-padding: 10;");
+        leftSidebar.setPrefWidth(160);
+
+        root.setLeft(leftSidebar);
+        pageListView.setPrefWidth(120); // adjust width
+        root.setLeft(pageListView);
+
+        scrollPane.setOnScroll(event -> {
+            if (event.getDeltaY() < 0) {
+                // Scroll down → Next Page
+                showPage(currentPage + 1);
+            } else if (event.getDeltaY() > 0) {
+                // Scroll up → Previous Page
+                showPage(currentPage - 1);
+            }
+        });
 
         root.setCenter(tabPane);
-        // root.setCenter(scrollPane);
         root.setBottom(statusBar);
 
         initialTab.setOnClosed(event -> {
@@ -375,7 +417,55 @@ public class CleanView extends Application {
                     document.close();
                 }
                 document = PDDocument.load(selectedFile);
+                pageListView.getItems().clear();
+                int totalPages = document.getNumberOfPages();
+                for (int i = 1; i <= totalPages; i++) {
+                    pageListView.getItems().add("Page " + i);
+                }
                 renderer = new PDFRenderer(document);
+                ObservableList<String> pageLabels = FXCollections.observableArrayList();
+                for (int i = 0; i < document.getNumberOfPages(); i++) {
+                    pageLabels.add("Page " + (i + 1));
+                }
+                pageListView.setItems(pageLabels);
+
+                pageListView.setCellFactory(lv -> new ListCell<String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null || getIndex() >= document.getNumberOfPages()) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            try {
+                                BufferedImage img = renderer.renderImageWithDPI(getIndex(), 30); // low-res preview
+                                WritableImage fxImg = SwingFXUtils.toFXImage(img, null);
+                                ImageView thumb = new ImageView(fxImg);
+                                thumb.setFitWidth(50);
+                                thumb.setPreserveRatio(true);
+
+                                Label label = new Label(item);
+                                label.setStyle("-fx-font-size: 10px; -fx-text-fill: #555;");
+
+                                VBox box = new VBox(thumb, label);
+                                box.setSpacing(4);
+                                box.setAlignment(Pos.CENTER);
+                                setGraphic(box);
+                                setText(null);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                setText(item); // fallback
+                            }
+                        }
+                    }
+                });
+
+                pageListView.getSelectionModel().selectedIndexProperty().addListener((obs, oldVal, newVal) -> {
+                    if (newVal != null && newVal.intValue() != currentPage) {
+                        showPage(newVal.intValue());
+                    }
+                });
+
                 currentPage = 0;
 
                 showPage(currentPage);
@@ -453,6 +543,12 @@ public class CleanView extends Application {
                     highlights.clear();
                 }
                 drawHighlights();
+
+                // ✅ Add these lines to update the sidebar highlight
+                if (pageListView != null) {
+                    pageListView.getSelectionModel().select(currentPage);
+                    pageListView.scrollTo(currentPage);
+                }
                 if (document != null) {
                     updateStatusBar();
                 }
