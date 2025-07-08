@@ -1,3 +1,6 @@
+* {
+    -fx-font-family: 'Segoe UI';
+}
 .tab-pane .tab .tab-close-button {
     -fx-background-color: transparent;
     -fx-text-fill: red;
@@ -6,5 +9,4 @@
 .tab-pane .tab .tab-close-button:hover {
     -fx-background-color: rgba(255, 0, 0, 0.1);
     -fx-text-fill: darkred;
-    -fx-cursor: hand;
 }
