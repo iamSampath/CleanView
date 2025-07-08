@@ -1,0 +1,78 @@
+/* main.css */
+.root {
+    -fx-background-color: #FFFFFF;
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.tool-bar {
+    -fx-background-color: #F8F8F8;
+    -fx-border-color: transparent transparent #E0E0E0 transparent;
+    -fx-padding: 6px 10px;
+
+}
+
+toolbar-icon {
+    -fx-cursor: hand;
+    -fx-opacity: 0.8;
+    -fx-padding: 4;
+}
+
+.toolbar-icon:hover {
+    -fx-opacity: 1.0;
+}
+
+.toolbar-icon:pressed {
+    -fx-opacity: 0.6;
+}
+
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.icon-button:hover {
+    -fx-background-color: #E0E0E0;
+}
+
+.icon-button:pressed {
+    -fx-background-color: #D0D0D0;
+}
+
+.text-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 4px;
+    -fx-padding: 6px 8px;
+}
+
+.text-field:focused {
+    -fx-border-color: #81D4FA;
+    -fx-effect: dropshadow(gaussian, #81D4FA, 2, 0.2, 0, 0);
+}
+
+.status-bar {
+    -fx-background-color: #F8F8F8;
+    -fx-border-color: #E0E0E0 transparent transparent transparent;
+    -fx-padding: 4px 8px;
+    -fx-font-size: 12px;
+    -fx-text-fill: #757575;
+}
+
+.search-box {
+    -fx-background-color: white;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 4;
+    -fx-padding: 4 8;
+}
+.search-box:focused {
+    -fx-border-color: #81D4FA;
+}
+
+
+.search-box, .page-input {
+    -fx-background-color: white;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 4;
+    -fx-padding: 4 8;
+    -fx-font-size: 12px;
+}

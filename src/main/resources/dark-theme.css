@@ -32,3 +32,13 @@
     -fx-text-fill: white;
     -fx-background-color: #555555;
 }
+
+.tab-pane .tab .tab-close-button {
+    -fx-background-color: red;
+    -fx-text-fill: red ;
+}
+
+.tab-pane .tab .tab-close-button:hover {
+    -fx-background-color: red;
+    -fx-text-fill: white;
+}                                                                 
