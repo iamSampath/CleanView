@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javafx.geometry.Bounds;
+import javafx.scene.text.Font;
 
 /**
  * CleanView PDF Viewer Application
@@ -84,6 +85,7 @@ public class CleanView extends Application {
         highlightCanvas.setMouseTransparent(true);
         pdfImageView.setPreserveRatio(true);
         pdfImageView.setFitWidth(800);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/segoeui.ttf"), 14);
         ToggleButton themeToggle = new ToggleButton("🌙");
 
         BorderPane root = new BorderPane();
@@ -129,7 +131,8 @@ public class CleanView extends Application {
 
         Label appTitle = new Label("CleanView PDF"); // Change this to make title of the header in the App
         appTitle.setStyle(
-                "-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #ffffff;-fx-font-family: 'Segoe UI';");
+                "-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #ffffff;-fx-font-family: 'Segoe UI';");
+
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -140,7 +143,7 @@ public class CleanView extends Application {
         headerBar.setStyle(
                 "-fx-background-color: linear-gradient(to right, #2c3e50, #4ca1af);" +
                         "-fx-padding: 12px;" +
-                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0.0, 0, 1);");
+                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0.0, 0, 1);-fx-font-family: 'Segoe UI';");
 
         FadeTransition fade = new FadeTransition(Duration.millis(800), headerBar);
         fade.setFromValue(0.0);
@@ -153,7 +156,7 @@ public class CleanView extends Application {
                         "-fx-border-color: #E0E0E0;" +
                         "-fx-border-width: 0 0 1 0;" +
                         "-fx-padding: 10 14;" +
-                        "-fx-alignment: CENTER_LEFT;");
+                        "-fx-alignment: CENTER_LEFT;-fx-font-family: 'Segoe UI';");
 
         ImageView openIcon = loadIcon("folder-open.svg", 30);
         openIcon.setPickOnBounds(true);
@@ -294,7 +297,7 @@ public class CleanView extends Application {
          * //initialTab.setGraphic(closeIconBase); // Explicitly clear graphic
          * tabPane.getTabs().add(initialTab);
          * 
-         * // statusLabel.setStyle("-fx-padding: 5px; -fx-font-size: 12px;");
+         * // statusLabel.setStyle("-fx-padding: 5px; -fx-font-size: 12px; -fx-font-family: 'Segoe UI';");
          */
 
         Tab initialTab = new Tab();
@@ -311,13 +314,13 @@ public class CleanView extends Application {
 
         HBox statusBar = new HBox(statusLabel);
         statusBar.getStyleClass().add("status-bar");
-        statusBar.setStyle("-fx-background-color: #f2f2f2;");
+        statusBar.setStyle("-fx-background-color: #f2f2f2;-fx-font-family: 'Segoe UI';");
         statusBar.setAlignment(Pos.CENTER_LEFT);
         statusBar.setId("status-bar");
         statusBar.setMinHeight(24);
         pageListView = new ListView<>();
         pageListView.setPrefWidth(160);
-        pageListView.setStyle("-fx-background-color: #F2F2F2;");
+        pageListView.setStyle("-fx-background-color: #F2F2F2; -fx-font-family: 'Segoe UI';");
 
         pageListView.getSelectionModel().selectedIndexProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal.intValue() >= 0 && document != null) {
@@ -326,7 +329,7 @@ public class CleanView extends Application {
         });
 
         leftSidebar = new VBox(new Label("Pages"), pageListView);
-        leftSidebar.setStyle("-fx-background-color: #ECECEC; -fx-padding: 10;");
+        leftSidebar.setStyle("-fx-background-color: #ECECEC; -fx-padding: 10; -fx-font-family: 'Segoe UI';");
         leftSidebar.setPrefWidth(160);
 
         root.setLeft(leftSidebar);
@@ -445,7 +448,7 @@ public class CleanView extends Application {
                                 thumb.setPreserveRatio(true);
 
                                 Label label = new Label(item);
-                                label.setStyle("-fx-font-size: 10px; -fx-text-fill: #555;");
+                                label.setStyle("-fx-font-size: 10px; -fx-text-fill: #555; -fx-font-family: 'Segoe UI';");
 
                                 VBox box = new VBox(thumb, label);
                                 box.setSpacing(4);
@@ -474,7 +477,7 @@ public class CleanView extends Application {
                 String filename = selectedFile.getName();
                 Label title = new Label(filename);
                 Label closeIcon = new Label("✖");
-                closeIcon.setStyle("-fx-text-fill: red; -fx-font-size: 14px; -fx-cursor: hand;");
+                closeIcon.setStyle("-fx-text-fill: red; -fx-font-size: 14px; -fx-cursor: hand; -fx-font-family: 'Segoe UI';");
                 HBox tabHeader = new HBox(title, closeIcon);
                 tabHeader.setAlignment(Pos.CENTER_LEFT);
                 tabHeader.setSpacing(5);
@@ -507,7 +510,7 @@ public class CleanView extends Application {
 
     private Tab createNoFileTab() {
         Label placeholder = new Label("No PDF Loaded");
-        placeholder.setStyle("-fx-font-size: 16px; -fx-text-fill: gray;");
+        placeholder.setStyle("-fx-font-size: 16px; -fx-text-fill: gray; -fx-font-family: 'Segoe UI';");
 
         StackPane container = new StackPane(placeholder);
         container.setMinHeight(400);

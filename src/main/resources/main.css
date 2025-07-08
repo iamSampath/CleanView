@@ -1,4 +1,7 @@
 /* main.css */
+* {
+    -fx-font-family: 'Segoe UI';
+}
 .root {
     -fx-background-color: #FFFFFF;
     -fx-font-family: 'Inter', 'Segoe UI', sans-serif;

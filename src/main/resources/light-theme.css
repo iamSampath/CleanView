@@ -1,3 +1,6 @@
+* {
+    -fx-font-family: 'Segoe UI';
+}
 .root {
     -fx-background-color: #f4f4f4;
     -fx-text-fill: #333333;
