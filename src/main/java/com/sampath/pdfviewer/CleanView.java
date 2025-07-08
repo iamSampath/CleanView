@@ -15,6 +15,7 @@ import javafx.scene.layout.Priority;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -23,19 +24,27 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
+import javafx.geometry.Orientation;
 import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import javafx.geometry.Bounds;
 
 /**
  * CleanView PDF Viewer Application
@@ -51,6 +60,7 @@ import java.util.List;
 public class CleanView extends Application {
 
     private ImageView pdfImageView;
+    private TabPane tabPane = new TabPane();
     private static String fileToOpen = null;
     private ScrollPane scrollPane;
     private float renderDPI = 150f; // Controls zoom
@@ -60,6 +70,7 @@ public class CleanView extends Application {
     private Canvas highlightCanvas = new Canvas();
     private List<Rectangle2D.Float> highlights = new ArrayList<>();
     private String currentKeyword = "";
+    private File currentFilePath;
     private Label statusLabel = new Label("Ready");
 
     @Override
@@ -67,61 +78,14 @@ public class CleanView extends Application {
         pdfImageView = new ImageView();
         highlightCanvas = new Canvas();
         highlightCanvas.setMouseTransparent(true);
-
-        TextField pageInput = new TextField();
-        TextField searchField = new TextField();
-        pageInput.setPromptText("Page #");
-        pageInput.setPrefWidth(60);
-        searchField.setPromptText("Search");
-        searchField.setOnAction(e -> {
-            String keyword = searchField.getText().trim();
-            if (document != null && !keyword.isEmpty()) {
-                searchAndGoToPage(keyword);
-            } else if (keyword.isEmpty()) {
-                searchAndGoToPage(""); // clear highlights
-            }
-        });
-        searchField.setPrefWidth(100);
-
         pdfImageView.setPreserveRatio(true);
         pdfImageView.setFitWidth(800);
-
-        Button openButton = new Button("Open PDF");
-        Button prevButton = new Button("Previous");
-        Button nextButton = new Button("Next");
-        Button zoomInButton = new Button("Zoom In");
-        Button zoomOutButton = new Button("Zoom Out");
-        Button goButton = new Button("Go");
-        Button searchButton = new Button("Find");
-        Button printButton = new Button("Print");
-        Button exportButton = new Button("Export Page");
-        Button fitToWidthButton = new Button("Fit to Width");
         ToggleButton themeToggle = new ToggleButton("🌙");
 
         BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, 1200, 1200);
-
-        openButton.setOnAction(e -> openPdf(primaryStage));
-        prevButton.setOnAction(e -> showPage(currentPage - 1));
-        nextButton.setOnAction(e -> showPage(currentPage + 1));
-        zoomInButton.setOnAction(e -> zoom(25));
-        zoomOutButton.setOnAction(e -> zoom(-25));
-        printButton.setOnAction(e -> printCurrentPage());
-        exportButton.setOnAction(e -> exportCurrentPageAsImage(primaryStage));
-        fitToWidthButton.setOnAction(e -> {
-            if (pdfImageView.getImage() == null)
-                return;
-
-            double viewerWidth = scrollPane.getViewportBounds().getWidth();
-
-            if (viewerWidth <= 0) {
-                scrollPane.viewportBoundsProperty().addListener((obs, oldVal, newVal) -> {
-                    fitImageToWidth(newVal.getWidth());
-                });
-            } else {
-                fitImageToWidth(viewerWidth);
-            }
-        });
+        Scene scene = new Scene(root, 1920, 1080);
+        scene.getStylesheets().add(getClass().getResource("/main.css").toExternalForm());
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 
         themeToggle.setSelected(false);
         themeToggle.setStyle("-fx-background-radius: 20;");
@@ -155,30 +119,6 @@ public class CleanView extends Application {
             }
         }
 
-        searchButton.setOnAction(e -> {
-            if (document == null)
-                return;
-            String keyword = searchField.getText().trim();
-            if (!keyword.isEmpty()) {
-                searchAndGoToPage(keyword);
-            }
-        });
-
-        goButton.setOnAction(e -> {
-            if (document == null)
-                return;
-            try {
-                int pageNum = Integer.parseInt(pageInput.getText()) - 1;
-                if (pageNum >= 0 && pageNum < document.getNumberOfPages()) {
-                    showPage(pageNum);
-                } else {
-                    System.out.println("Invalid page number");
-                }
-            } catch (NumberFormatException ex) {
-                System.out.println("Please enter a valid number");
-            }
-        });
-
         ImageView logo = new ImageView(new Image(getClass().getResourceAsStream("/icon.png")));
         logo.setFitHeight(24);
         logo.setFitWidth(24);
@@ -203,8 +143,123 @@ public class CleanView extends Application {
         fade.setToValue(1.0);
         fade.play();
 
-        ToolBar toolbar = new ToolBar(openButton, prevButton, nextButton, zoomInButton, zoomOutButton,
-                pageInput, goButton, searchField, searchButton, printButton, exportButton, fitToWidthButton);
+        HBox iconToolbar = new HBox(12);
+        iconToolbar.setStyle(
+                "-fx-background-color: #F8F8F8;" +
+                        "-fx-border-color: #E0E0E0;" +
+                        "-fx-border-width: 0 0 1 0;" +
+                        "-fx-padding: 10 14;" +
+                        "-fx-alignment: CENTER_LEFT;");
+
+        ImageView openIcon = loadIcon("folder-open.svg", 30);
+        openIcon.setPickOnBounds(true);
+        ImageView prevIcon = loadIcon("back.svg", 30);
+        prevIcon.setPickOnBounds(true);
+        ImageView nextIcon = loadIcon("front.svg", 30);
+        nextIcon.setPickOnBounds(true);
+        ImageView zoomInIcon = loadIcon("zoom-in.svg", 30);
+        zoomInIcon.setPickOnBounds(true);
+        ImageView zoomOutIcon = loadIcon("zoom-out.svg", 30);
+        zoomOutIcon.setPickOnBounds(true);
+        ImageView printIcon = loadIcon("print.svg", 30);
+        printIcon.setPickOnBounds(true);
+        ImageView exportIcon = loadIcon("export.svg", 30);
+        exportIcon.setPickOnBounds(true);
+        ImageView fitWidthIcon = loadIcon("fitwidth.svg", 30);
+        fitWidthIcon.setPickOnBounds(true);
+        ImageView searchIcon = loadIcon("search.svg", 30);
+        searchIcon.setPickOnBounds(true);
+        ImageView goIcon = loadIcon("enter.svg", 30);
+        goIcon.setPickOnBounds(true);
+
+        TextField pageInput = new TextField();
+        TextField searchField = new TextField();
+        pageInput.setPromptText("Page #");
+        pageInput.setPrefWidth(60);
+        searchField.setPromptText("Search");
+        searchField.setOnAction(e -> {
+            String keyword = searchField.getText().trim();
+            if (document != null && !keyword.isEmpty()) {
+                searchAndGoToPage(keyword);
+            } else if (keyword.isEmpty()) {
+                searchAndGoToPage(""); // clear highlights
+            }
+        });
+
+        searchField.setPrefWidth(100);
+
+        for (ImageView iv : Arrays.asList(openIcon, prevIcon, nextIcon, zoomInIcon, zoomOutIcon, printIcon, exportIcon,
+                fitWidthIcon, searchIcon, goIcon)) {
+            iv.getStyleClass().add("toolbar-icon");
+            iv.setPickOnBounds(true);
+        }
+
+        iconToolbar.getChildren().addAll(
+                openIcon, printIcon, exportIcon,
+                new Separator(Orientation.VERTICAL),
+                prevIcon, nextIcon, new Region(), fitWidthIcon,
+                zoomInIcon, zoomOutIcon,
+                pageInput, goIcon,
+                searchField, searchIcon
+        // spacer only
+        );
+        HBox.setHgrow(iconToolbar.getChildren().get(iconToolbar.getChildren().size() - 1), Priority.ALWAYS);
+
+        openIcon.setOnMouseClicked(e -> openPdf(primaryStage));
+        prevIcon.setOnMouseClicked(e -> showPage(currentPage - 1));
+        nextIcon.setOnMouseClicked(e -> showPage(currentPage + 1));
+        zoomInIcon.setOnMouseClicked(e -> zoom(25));
+        zoomOutIcon.setOnMouseClicked(e -> zoom(-25));
+        printIcon.setOnMouseClicked(e -> printCurrentPage());
+        exportIcon.setOnMouseClicked(e -> exportCurrentPageAsImage(primaryStage));
+        searchIcon.setOnMouseClicked(e -> {
+            if (document != null) {
+                String keyword = searchField.getText().trim();
+                if (!keyword.isEmpty()) {
+                    searchAndGoToPage(keyword);
+                }
+            }
+        });
+
+        Tooltip.install(openIcon, new Tooltip("Open PDF"));
+        Tooltip.install(prevIcon, new Tooltip("Go to Previous Page"));
+        Tooltip.install(nextIcon, new Tooltip("Go to Next Page"));
+        Tooltip.install(zoomInIcon, new Tooltip("Zoom In"));
+        Tooltip.install(zoomOutIcon, new Tooltip("Zoom Out"));
+        Tooltip.install(printIcon, new Tooltip("Print Current Page"));
+        Tooltip.install(exportIcon, new Tooltip("Export Current Page as Image"));
+        Tooltip.install(fitWidthIcon, new Tooltip("Fit Image to Width"));
+        Tooltip.install(searchIcon, new Tooltip("Search Document"));
+        Tooltip.install(goIcon, new Tooltip("Go to Page"));
+        Tooltip.install(pageInput, new Tooltip("Enter Page Number"));
+        Tooltip.install(searchField, new Tooltip("Enter Search Keyword"));
+
+        searchField.getStyleClass().add("search-box");
+        pageInput.getStyleClass().add("page-input");
+
+        fitWidthIcon.setOnMouseClicked(e -> {
+            if (pdfImageView.getImage() == null)
+                return;
+
+            double viewerWidth = scrollPane.getViewportBounds().getWidth();
+            fitImageToWidth(viewerWidth > 0 ? viewerWidth : 800);
+
+        });
+
+        goIcon.setOnMouseClicked(e -> {
+            if (document == null)
+                return;
+            try {
+                int pageNum = Integer.parseInt(pageInput.getText()) - 1;
+                if (pageNum >= 0 && pageNum < document.getNumberOfPages()) {
+                    showPage(pageNum);
+                } else {
+                    System.out.println("Invalid page number");
+                }
+            } catch (NumberFormatException ex) {
+                System.out.println("Please enter a valid number");
+            }
+        });
 
         // Stack the image and highlight layer
         StackPane layeredView = new StackPane();
@@ -217,19 +272,47 @@ public class CleanView extends Application {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        // statusLabel.setStyle("-fx-padding: 5px; -fx-font-size: 12px;");
+        /*
+         * Tab initialTab = new Tab("No File Open", scrollPane);
+         * initialTab.setClosable(false);
+         * //initialTab.setGraphic(closeIconBase); // Explicitly clear graphic
+         * tabPane.getTabs().add(initialTab);
+         * 
+         * // statusLabel.setStyle("-fx-padding: 5px; -fx-font-size: 12px;");
+         */
+
+        Tab initialTab = new Tab();
+        initialTab.setText("No File Open");
+        initialTab.setClosable(false);
+        initialTab.setGraphic(null); // Ensure old graphic (icon or X) isn't reused
+
+        // Use a new container (don't reuse scrollPane)
+        StackPane placeholder = new StackPane(new Label("No PDF Loaded"));
+        placeholder.setMinHeight(400);
+        initialTab.setContent(placeholder);
+
+        tabPane.getTabs().add(initialTab);
 
         HBox statusBar = new HBox(statusLabel);
+        statusBar.getStyleClass().add("status-bar");
         statusBar.setStyle("-fx-background-color: #f2f2f2;");
         statusBar.setAlignment(Pos.CENTER_LEFT);
         statusBar.setId("status-bar");
         statusBar.setMinHeight(24);
 
-        root.setCenter(scrollPane);
+        root.setCenter(tabPane);
+        // root.setCenter(scrollPane);
         root.setBottom(statusBar);
 
+        initialTab.setOnClosed(event -> {
+            System.out.println("Initial tab closed.");
+            // Optional: cleanup like closing PDDocument or updating UI
+        });
+
+        // System.out.println("TabPane children: " + tabPane.getTabs().size());
+
         VBox topSection = new VBox();
-        topSection.getChildren().addAll(headerBar, toolbar);
+        topSection.getChildren().addAll(headerBar, iconToolbar);
         root.setTop(topSection);
 
         primaryStage.setTitle("CleanView");
@@ -237,12 +320,56 @@ public class CleanView extends Application {
         primaryStage.show();
     }
 
+    private ImageView loadIcon(String svgFileName, double size) {
+        InputStream is = getClass().getResourceAsStream("/icons/" + svgFileName);
+        if (is == null) {
+            // System.err.println("SVG file not found: " + svgFileName);
+            return new ImageView(); // return empty fallback
+        }
+
+        SVGPath svg = new SVGPath();
+        svg.setFill(Color.web("#212121"));
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                if (line.contains(" d=\"")) {
+                    String pathData = line.replaceAll(".*?d=\"([^\"]+)\".*", "$1");
+                    svg.setContent(pathData);
+                    break;
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        svg.setFill(Color.web("#212121")); // You can make this dynamic
+        svg.setScaleX(size / 24.0);
+        svg.setScaleY(size / 24.0);
+
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+
+        Bounds bounds = svg.getLayoutBounds();
+        WritableImage image = new WritableImage(
+                (int) Math.ceil(bounds.getWidth() * svg.getScaleX()),
+                (int) Math.ceil(bounds.getHeight() * svg.getScaleY()));
+
+        WritableImage snapshot = svg.snapshot(params, image);
+        return new ImageView(snapshot);
+    }
+
     private void openPdf(Stage stage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open PDF File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
         File selectedFile = fileChooser.showOpenDialog(stage);
+
         if (selectedFile != null) {
+            currentFilePath = selectedFile;
             try {
                 if (document != null) {
                     document.close();
@@ -250,7 +377,37 @@ public class CleanView extends Application {
                 document = PDDocument.load(selectedFile);
                 renderer = new PDFRenderer(document);
                 currentPage = 0;
+
                 showPage(currentPage);
+
+                // Update the tab title
+                String filename = selectedFile.getName();
+                Label title = new Label(filename);
+                Label closeIcon = new Label("✖");
+                closeIcon.setStyle("-fx-text-fill: red; -fx-font-size: 14px; -fx-cursor: hand;");
+                HBox tabHeader = new HBox(title, closeIcon);
+                tabHeader.setAlignment(Pos.CENTER_LEFT);
+                tabHeader.setSpacing(5);
+
+                Tab pdfTab = new Tab();
+                pdfTab.setContent(scrollPane);
+                pdfTab.setClosable(false); // optional for now
+                pdfTab.setGraphic(tabHeader);
+
+                closeIcon.setOnMouseClicked(e -> {
+                    try {
+                        if (document != null) {
+                            document.close();
+                            document = null; // reset reference
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    tabPane.getTabs().setAll(createNoFileTab());
+                    updateStatusBar(); // 🔥 Reset status to "Ready"
+                });
+
+                tabPane.getTabs().setAll(pdfTab); // Replace current tab
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -258,8 +415,23 @@ public class CleanView extends Application {
         }
     }
 
+    private Tab createNoFileTab() {
+        Label placeholder = new Label("No PDF Loaded");
+        placeholder.setStyle("-fx-font-size: 16px; -fx-text-fill: gray;");
+
+        StackPane container = new StackPane(placeholder);
+        container.setMinHeight(400);
+
+        Tab tab = new Tab();
+        tab.setText("No File Open");
+        tab.setContent(container);
+        tab.setClosable(false); // Ensure X is not shown
+
+        return tab;
+    }
+
     private void showPage(int pageIndex) {
-          updateStatusBar();
+        updateStatusBar();
         if (document == null || renderer == null)
             return;
         if (pageIndex >= 0 && pageIndex < document.getNumberOfPages()) {
@@ -422,6 +594,8 @@ public class CleanView extends Application {
             PrinterJob printJob = PrinterJob.getPrinterJob();
             printJob.setJobName("CleanView  - Page " + (currentPage + 1));
 
+            System.out.println("Print clicked");
+
             // Printable wraps our image
             Printable printable = new Printable() {
                 public int print(Graphics g, PageFormat pf, int pageIndex) {
@@ -444,6 +618,7 @@ public class CleanView extends Application {
 
                     return PAGE_EXISTS;
                 }
+
             };
 
             printJob.setPrintable(printable);
