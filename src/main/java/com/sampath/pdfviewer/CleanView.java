@@ -13,8 +13,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -46,7 +48,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.text.Font;
 
 /**
@@ -133,7 +138,6 @@ public class CleanView extends Application {
         appTitle.setStyle(
                 "-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #ffffff;-fx-font-family: 'Segoe UI';");
 
-
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -217,7 +221,7 @@ public class CleanView extends Application {
         nextIcon.setOnMouseClicked(e -> showPage(currentPage + 1));
         zoomInIcon.setOnMouseClicked(e -> zoom(25));
         zoomOutIcon.setOnMouseClicked(e -> zoom(-25));
-        printIcon.setOnMouseClicked(e -> printCurrentPage());
+        printIcon.setOnMouseClicked(e -> showPrintDialog(primaryStage));
         exportIcon.setOnMouseClicked(e -> exportCurrentPageAsImage(primaryStage));
         searchIcon.setOnMouseClicked(e -> {
             if (document != null) {
@@ -297,7 +301,9 @@ public class CleanView extends Application {
          * //initialTab.setGraphic(closeIconBase); // Explicitly clear graphic
          * tabPane.getTabs().add(initialTab);
          * 
-         * // statusLabel.setStyle("-fx-padding: 5px; -fx-font-size: 12px; -fx-font-family: 'Segoe UI';");
+         * // statusLabel.
+         * setStyle("-fx-padding: 5px; -fx-font-size: 12px; -fx-font-family: 'Segoe UI';"
+         * );
          */
 
         Tab initialTab = new Tab();
@@ -420,44 +426,49 @@ public class CleanView extends Application {
                     document.close();
                 }
                 document = PDDocument.load(selectedFile);
+                renderer = new PDFRenderer(document);
                 pageListView.getItems().clear();
                 int totalPages = document.getNumberOfPages();
                 for (int i = 1; i <= totalPages; i++) {
                     pageListView.getItems().add("Page " + i);
                 }
-                renderer = new PDFRenderer(document);
+
                 ObservableList<String> pageLabels = FXCollections.observableArrayList();
                 for (int i = 0; i < document.getNumberOfPages(); i++) {
                     pageLabels.add("Page " + (i + 1));
                 }
                 pageListView.setItems(pageLabels);
 
-                pageListView.setCellFactory(lv -> new ListCell<String>() {
+                pageListView.setCellFactory(list -> new ListCell<String>() {
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (empty || item == null || getIndex() >= document.getNumberOfPages()) {
+
+                        if (empty || item == null || renderer == null || getIndex() < 0
+                                || getIndex() >= document.getNumberOfPages()) {
                             setGraphic(null);
                             setText(null);
                         } else {
                             try {
-                                BufferedImage img = renderer.renderImageWithDPI(getIndex(), 30); // low-res preview
+                                BufferedImage img = renderer.renderImageWithDPI(getIndex(), 72); // More visible DPI
                                 WritableImage fxImg = SwingFXUtils.toFXImage(img, null);
+
                                 ImageView thumb = new ImageView(fxImg);
-                                thumb.setFitWidth(50);
+                                thumb.setFitWidth(80);
                                 thumb.setPreserveRatio(true);
 
                                 Label label = new Label(item);
-                                label.setStyle("-fx-font-size: 10px; -fx-text-fill: #555; -fx-font-family: 'Segoe UI';");
+                                label.setStyle(
+                                        "-fx-font-size: 10px; -fx-text-fill: #333; -fx-font-family: 'Segoe UI';");
 
-                                VBox box = new VBox(thumb, label);
-                                box.setSpacing(4);
-                                box.setAlignment(Pos.CENTER);
-                                setGraphic(box);
+                                VBox container = new VBox(thumb, label);
+                                container.setAlignment(Pos.CENTER);
+                                container.setSpacing(4);
+                                setGraphic(container);
                                 setText(null);
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
-                                setText(item); // fallback
+                                setText(item + " (error)");
                             }
                         }
                     }
@@ -477,7 +488,8 @@ public class CleanView extends Application {
                 String filename = selectedFile.getName();
                 Label title = new Label(filename);
                 Label closeIcon = new Label("✖");
-                closeIcon.setStyle("-fx-text-fill: red; -fx-font-size: 14px; -fx-cursor: hand; -fx-font-family: 'Segoe UI';");
+                closeIcon.setStyle(
+                        "-fx-text-fill: red; -fx-font-size: 14px; -fx-cursor: hand; -fx-font-family: 'Segoe UI';");
                 HBox tabHeader = new HBox(title, closeIcon);
                 tabHeader.setAlignment(Pos.CENTER_LEFT);
                 tabHeader.setSpacing(5);
@@ -683,33 +695,285 @@ public class CleanView extends Application {
         showPage(currentPage);
     }
 
-    private void printCurrentPage() {
-    if (document == null || renderer == null)
-        return;
+    // Method to improve Dialogue for printing
+    private void showPrintDialog(Stage owner) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Print PDF");
+        dialog.initOwner(owner);
 
-    try {
-        BufferedImage image = renderer.renderImageWithDPI(currentPage, 300);
-        WritableImage fxImage = SwingFXUtils.toFXImage(image, null);
-        ImageView printView = new ImageView(fxImage);
-        printView.setPreserveRatio(true);
-        printView.setFitWidth(595); // A4 width in points, adjust as needed
+        ComboBox<javafx.print.Printer> printerBox = new ComboBox<>();
+        printerBox.getItems().addAll(javafx.print.Printer.getAllPrinters());
+        printerBox.setValue(javafx.print.Printer.getDefaultPrinter());
 
-        javafx.print.PrinterJob job = javafx.print.PrinterJob.createPrinterJob();
-        if (job != null && job.showPrintDialog(null)) {
-            boolean success = job.printPage(printView);
-            if (success) {
-                job.endJob();
-                System.out.println("Printed successfully");
-            } else {
-                System.out.println("Printing failed");
+        printerBox.setCellFactory(cb -> new ListCell<javafx.print.Printer>() {
+            @Override
+            protected void updateItem(javafx.print.Printer printer, boolean empty) {
+                super.updateItem(printer, empty);
+                setText((empty || printer == null) ? null : printer.getName());
             }
+        });
+
+        printerBox.setButtonCell(new ListCell<javafx.print.Printer>() {
+            @Override
+            protected void updateItem(javafx.print.Printer printer, boolean empty) {
+                super.updateItem(printer, empty);
+                setText((empty || printer == null) ? null : printer.getName());
+            }
+        });
+
+        Spinner<Integer> copiesSpinner = new Spinner<>(1, 99, 1);
+
+        ToggleGroup rangeGroup = new ToggleGroup();
+        RadioButton allPagesRadio = new RadioButton("All");
+        RadioButton currentPageRadio = new RadioButton("Current");
+        RadioButton customRangeRadio = new RadioButton("Custom");
+        allPagesRadio.setToggleGroup(rangeGroup);
+        currentPageRadio.setToggleGroup(rangeGroup);
+        customRangeRadio.setToggleGroup(rangeGroup);
+        allPagesRadio.setSelected(true);
+
+        TextField customRangeField = new TextField();
+        customRangeField.setPromptText("e.g. 1-3,5");
+        customRangeField.setDisable(true);
+        customRangeRadio.selectedProperty().addListener((obs, old, selected) -> {
+            customRangeField.setDisable(!selected);
+        });
+
+        ComboBox<String> orientationBox = new ComboBox<>();
+        orientationBox.getItems().addAll("Portrait", "Landscape");
+        orientationBox.setValue("Portrait");
+
+        // === PREVIEW SECTION ===
+        ImageView previewImage = new ImageView();
+        previewImage.setPreserveRatio(true);
+        previewImage.setFitWidth(220);
+        previewImage.setFitHeight(300);
+        Label previewLabel = new Label("Preview: Page 1");
+
+        Button prevBtn = new Button("<");
+        Button nextBtn = new Button(">");
+
+        HBox navBar = new HBox(10, prevBtn, nextBtn);
+        navBar.setAlignment(Pos.CENTER);
+        VBox previewBox = new VBox(10, previewImage, navBar, previewLabel);
+        previewBox.setAlignment(Pos.CENTER);
+
+        ComboBox<String> colorModeBox = new ComboBox<>();
+        colorModeBox.getItems().addAll("Color", "Black & White");
+        colorModeBox.setValue("Color");
+
+        VBox settingsBox = new VBox(10,
+                new Label("Printer:"), printerBox,
+                new Label("Copies:"), copiesSpinner,
+                new Label("Page Range:"), allPagesRadio, currentPageRadio,
+                new HBox(10, customRangeRadio, customRangeField),
+                new Label("Orientation:"), orientationBox,
+                new Label("Color Mode:"), colorModeBox);
+
+        HBox content = new HBox(30, settingsBox, previewBox);
+        content.setPadding(new Insets(10));
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // === PREVIEW LOGIC ===
+        final List<Integer> pagesToPreview = new ArrayList<>();
+        final int[] previewIndex = { 0 };
+
+        Runnable updatePreviewList = () -> {
+            pagesToPreview.clear();
+            int total = document.getNumberOfPages();
+            try {
+                if (allPagesRadio.isSelected()) {
+                    for (int i = 0; i < total; i++)
+                        pagesToPreview.add(i);
+                } else if (currentPageRadio.isSelected()) {
+                    pagesToPreview.add(currentPage);
+                } else if (customRangeRadio.isSelected()) {
+                    String input = customRangeField.getText().trim();
+                    String[] parts = input.split(",");
+                    for (String part : parts) {
+                        if (part.contains("-")) {
+                            String[] range = part.split("-");
+                            int start = Math.max(0, Integer.parseInt(range[0].trim()) - 1);
+                            int end = Math.min(total - 1, Integer.parseInt(range[1].trim()) - 1);
+                            for (int i = start; i <= end; i++)
+                                pagesToPreview.add(i);
+                        } else {
+                            int index = Math.max(0, Math.min(total - 1, Integer.parseInt(part.trim()) - 1));
+                            pagesToPreview.add(index);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                System.out.println("Invalid custom range input.");
+            }
+
+            if (!pagesToPreview.isEmpty()) {
+                previewIndex[0] = 0;
+                showPreviewPage(previewImage, previewLabel, pagesToPreview.get(0), colorModeBox.getValue());
+            } else {
+                previewImage.setImage(null);
+                previewLabel.setText("No preview available");
+            }
+        };
+
+        prevBtn.setOnAction(e -> {
+            if (!pagesToPreview.isEmpty()) {
+                previewIndex[0] = Math.max(0, previewIndex[0] - 1);
+                showPreviewPage(previewImage, previewLabel, pagesToPreview.get(previewIndex[0]),
+                        colorModeBox.getValue());
+            }
+        });
+
+        nextBtn.setOnAction(e -> {
+            if (!pagesToPreview.isEmpty()) {
+                previewIndex[0] = Math.min(pagesToPreview.size() - 1, previewIndex[0] + 1);
+                showPreviewPage(previewImage, previewLabel, pagesToPreview.get(previewIndex[0]),
+                        colorModeBox.getValue());
+            }
+        });
+
+        allPagesRadio.setOnAction(e -> updatePreviewList.run());
+        currentPageRadio.setOnAction(e -> updatePreviewList.run());
+        customRangeRadio.setOnAction(e -> updatePreviewList.run());
+        customRangeField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (customRangeRadio.isSelected())
+                updatePreviewList.run();
+        });
+
+        Platform.runLater(updatePreviewList); // Initial load
+
+        colorModeBox.setOnAction(e -> {
+            if (!pagesToPreview.isEmpty()) {
+                showPreviewPage(previewImage, previewLabel, pagesToPreview.get(previewIndex[0]),
+                        colorModeBox.getValue());
+            }
+        });
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            javafx.print.Printer selectedPrinter = printerBox.getValue();
+            int copies = copiesSpinner.getValue();
+            String orientation = orientationBox.getValue();
+            printPages(selectedPrinter, pagesToPreview, orientation, copies);
         }
-
-    } catch (Exception ex) {
-        ex.printStackTrace();
     }
-}
 
+    // Helper method to show preview of a specific page
+    private void showPreviewPage(ImageView view, Label label, int pageIndex, String colorMode) {
+        // Clear old preview immediately
+        label.setText("Rendering preview...");
+        view.setImage(null);
+
+        // Build new background task
+        Task<WritableImage> renderTask = new Task<WritableImage>() {
+            @Override
+            protected WritableImage call() {
+                try {
+                    BufferedImage image = renderer.renderImageWithDPI(pageIndex, 72);
+
+                    if ("Black & White".equals(colorMode)) {
+                        for (int y = 0; y < image.getHeight(); y++) {
+                            for (int x = 0; x < image.getWidth(); x++) {
+                                int rgb = image.getRGB(x, y);
+                                int r = (rgb >> 16) & 0xFF;
+                                int g = (rgb >> 8) & 0xFF;
+                                int b = rgb & 0xFF;
+                                int gray = (r + g + b) / 3;
+                                int grayRGB = (gray << 16) | (gray << 8) | gray;
+                                image.setRGB(x, y, grayRGB);
+                            }
+                        }
+                    }
+
+                    return SwingFXUtils.toFXImage(image, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        };
+
+        renderTask.setOnSucceeded(evt -> {
+            WritableImage result = renderTask.getValue();
+            if (result != null) {
+                view.setImage(result);
+                label.setText("Preview: Page " + (pageIndex + 1));
+            } else {
+                label.setText("Preview failed");
+            }
+        });
+
+        renderTask.setOnFailed(evt -> label.setText("Preview failed"));
+
+        // Run in background
+        Thread thread = new Thread(renderTask);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    // Method to show modern dialogue and print pages
+    private void printPages(javafx.print.Printer printer, List<Integer> pages, String orientation, int copies) {
+        javafx.print.PrinterJob job = javafx.print.PrinterJob.createPrinterJob(printer);
+        if (job != null) {
+            javafx.print.PageLayout layout = job.getJobSettings().getPageLayout();
+            if (orientation.equals("Landscape")) {
+                layout = printer.createPageLayout(javafx.print.Paper.A4, javafx.print.PageOrientation.LANDSCAPE,
+                        javafx.print.Printer.MarginType.DEFAULT);
+            } else {
+                layout = printer.createPageLayout(javafx.print.Paper.A4, javafx.print.PageOrientation.PORTRAIT,
+                        javafx.print.Printer.MarginType.DEFAULT);
+            }
+
+            for (int c = 0; c < copies; c++) {
+                for (int pageIndex : pages) {
+                    try {
+                        BufferedImage image = renderer.renderImageWithDPI(pageIndex, 300);
+                        WritableImage fxImg = SwingFXUtils.toFXImage(image, null);
+                        ImageView imageView = new ImageView(fxImg);
+                        imageView.setPreserveRatio(true);
+                        imageView.setFitWidth(layout.getPrintableWidth());
+
+                        boolean success = job.printPage(layout, imageView);
+                        if (!success) {
+                            System.out.println("Failed to print page " + (pageIndex + 1));
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            job.endJob();
+        }
+    }
+
+    private void printCurrentPage() {
+        if (document == null || renderer == null)
+            return;
+
+        try {
+            BufferedImage image = renderer.renderImageWithDPI(currentPage, 300);
+            WritableImage fxImage = SwingFXUtils.toFXImage(image, null);
+            ImageView printView = new ImageView(fxImage);
+            printView.setPreserveRatio(true);
+            printView.setFitWidth(595); // A4 width in points, adjust as needed
+
+            javafx.print.PrinterJob job = javafx.print.PrinterJob.createPrinterJob();
+            if (job != null && job.showPrintDialog(null)) {
+                boolean success = job.printPage(printView);
+                if (success) {
+                    job.endJob();
+                    System.out.println("Printed successfully");
+                } else {
+                    System.out.println("Printing failed");
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private void searchAndGoToPage(String keyword) {
         try {
