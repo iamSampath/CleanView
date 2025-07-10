@@ -4,7 +4,7 @@
 
 ---
 <p align="center">
-  <img src="https://github.com/iamSampath/CleanView/blob/c47ac8db29b009c7eeff7620ff2e515d046e07f1/src/main/resources/icon.png" alt="CleanView Logo" width="300"/>
+  <img src="https://github.com/iamSampath/CleanView/blob/3c703f470f0f26b7c8aa86710dfd7b7f25afac3c/src/main/resources/icon.png" alt="CleanView Logo" width="300"/>
 </p>
 
 ## ✨ Features
