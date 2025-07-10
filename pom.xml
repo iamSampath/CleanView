@@ -8,6 +8,8 @@
     <version>1.0</version>
     <packaging>jar</packaging>
     <name>CleanView</name>
+    <!-- ADDED: A description for your application -->
+    <description>A clean and simple PDF viewer.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -156,6 +158,9 @@
                                         <argument>${project.build.directory}</argument>
                                         <argument>--name</argument>
                                         <argument>${project.name}</argument>
+                                        <!-- ADDED: Use the project description for the installer -->
+                                        <argument>--description</argument>
+                                        <argument>${project.description}</argument>
                                         <argument>--main-class</argument>
                                         <argument>${main.class}</argument>
                                         <argument>--main-jar</argument>
@@ -172,7 +177,6 @@
                                         <argument>--win-shortcut</argument>
                                         <argument>--icon</argument>
                                         <argument>src/main/resources/icon.ico</argument>
-                                        <!-- ** NEW **: Add the license file -->
                                         <argument>--license-file</argument>
                                         <argument>src/main/resources/license.txt</argument>
                                     </arguments>
@@ -241,6 +245,9 @@
                                         <argument>${project.build.directory}</argument>
                                         <argument>--name</argument>
                                         <argument>${project.name}</argument>
+                                        <!-- ADDED: Use the project description for the installer -->
+                                        <argument>--description</argument>
+                                        <argument>${project.description}</argument>
                                         <argument>--main-class</argument>
                                         <argument>${main.class}</argument>
                                         <argument>--main-jar</argument>
@@ -255,7 +262,6 @@
                                         <argument>Medarametla Solutions</argument>
                                         <argument>--icon</argument>
                                         <argument>src/main/resources/icon.icns</argument>
-                                        <!-- ** NEW **: Add the license file -->
                                         <argument>--license-file</argument>
                                         <argument>src/main/resources/license.txt</argument>
                                     </arguments>
