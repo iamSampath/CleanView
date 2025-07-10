@@ -684,53 +684,32 @@ public class CleanView extends Application {
     }
 
     private void printCurrentPage() {
-        if (document == null || renderer == null)
-            return;
+    if (document == null || renderer == null)
+        return;
 
-        try {
-            BufferedImage image = renderer.renderImageWithDPI(currentPage, 300);
+    try {
+        BufferedImage image = renderer.renderImageWithDPI(currentPage, 300);
+        WritableImage fxImage = SwingFXUtils.toFXImage(image, null);
+        ImageView printView = new ImageView(fxImage);
+        printView.setPreserveRatio(true);
+        printView.setFitWidth(595); // A4 width in points, adjust as needed
 
-            PrinterJob printJob = PrinterJob.getPrinterJob();
-            printJob.setJobName("CleanView  - Page " + (currentPage + 1));
-
-            System.out.println("Print clicked");
-
-            // Printable wraps our image
-            Printable printable = new Printable() {
-                public int print(Graphics g, PageFormat pf, int pageIndex) {
-                    if (pageIndex > 0)
-                        return NO_SUCH_PAGE;
-
-                    // Center image on the page
-                    double x = pf.getImageableX();
-                    double y = pf.getImageableY();
-                    double width = pf.getImageableWidth();
-                    double height = pf.getImageableHeight();
-
-                    double scaleX = width / image.getWidth();
-                    double scaleY = height / image.getHeight();
-                    double scale = Math.min(scaleX, scaleY);
-
-                    ((Graphics2D) g).translate(x, y);
-                    ((Graphics2D) g).scale(scale, scale);
-                    g.drawImage(image, 0, 0, null);
-
-                    return PAGE_EXISTS;
-                }
-
-            };
-
-            printJob.setPrintable(printable);
-            boolean doPrint = printJob.printDialog();
-
-            if (doPrint) {
-                printJob.print();
+        javafx.print.PrinterJob job = javafx.print.PrinterJob.createPrinterJob();
+        if (job != null && job.showPrintDialog(null)) {
+            boolean success = job.printPage(printView);
+            if (success) {
+                job.endJob();
+                System.out.println("Printed successfully");
+            } else {
+                System.out.println("Printing failed");
             }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
     }
+}
+
 
     private void searchAndGoToPage(String keyword) {
         try {
