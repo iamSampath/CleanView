@@ -752,3 +752,4 @@ public class CleanView extends Application {
         launch(args);
     }
 }
+
