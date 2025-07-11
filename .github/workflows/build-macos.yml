@@ -1,0 +1,46 @@
+name: Build macOS Installer
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Set up Maven
+      run: |
+        mvn -v
+
+    - name: Build App
+      run: |
+        mvn clean install
+
+    - name: Package with jpackage
+      run: |
+        jpackage --type dmg \
+          --input target \
+          --dest installer \
+          --name CleanView \
+          --main-jar CleanView-1.0.jar \
+          --main-class com.sampath.pdfviewer.MainApp \
+          --icon src/main/resources/icon.icns \
+          --mac-package-name CleanView \
+          --mac-package-identifier com.cleanview.app
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: CleanView-macOS
+        path: installer/*.dmg
