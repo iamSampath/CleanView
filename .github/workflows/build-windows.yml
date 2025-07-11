@@ -51,4 +51,4 @@ jobs:
         name: Release v1.0.${{ github.run_number }}
         files: installer/*.exe
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CV_PAT }}
