@@ -45,3 +45,14 @@ jobs:
       with:
         name: CleanView-Windows
         path: installer/*.exe
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: Release v1.0.${{ github.run_number }}
+        files: |
+         installer/*.exe     # or *.dmg on mac
+        env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
