@@ -26,18 +26,19 @@ jobs:
       run: mvn clean install
 
     - name: Package with jpackage
+      shell: cmd
       run: |
         jpackage --type exe ^
-          --input target ^
-          --dest installer ^
-          --name CleanView ^
-          --main-jar CleanView-1.0.jar ^
-          --main-class com.sampath.pdfviewer.MainApp ^
-          --icon src/main/resources/icon.ico ^
-          --win-menu ^
-          --win-shortcut ^
-          --win-dir-chooser ^
-          --win-per-user-install
+        --input target ^
+        --dest installer ^
+        --name CleanView ^
+        --main-jar CleanView-1.0.jar ^
+        --main-class com.sampath.pdfviewer.MainApp ^
+        --icon src/main/resources/icon.ico ^
+        --win-menu ^
+        --win-shortcut ^
+        --win-dir-chooser ^
+        --win-per-user-install
 
     - name: Upload Installer Artifact
       uses: actions/upload-artifact@v4
