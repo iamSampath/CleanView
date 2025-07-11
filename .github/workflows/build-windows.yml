@@ -1,4 +1,4 @@
-name: Build Windows Installer
+name: Build and Release Windows Installer
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up JDK 21
@@ -19,13 +19,13 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
 
-    - name: Set up Maven
+    - name: Verify Maven
       run: mvn -v
 
-    - name: Build App
+    - name: Build app
       run: mvn clean install
 
-    - name: Package with jpackage
+    - name: Create installer with jpackage
       shell: cmd
       run: |
         jpackage --type exe ^
@@ -40,19 +40,15 @@ jobs:
         --win-dir-chooser ^
         --win-per-user-install
 
-    - name: Upload Installer Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: CleanView-Windows
-        path: installer/*.exe
+    - name: Verify installer file exists
+      shell: cmd
+      run: dir installer
 
-    - name: Create GitHub Release
+    - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v1.0.${{ github.run_number }}
         name: Release v1.0.${{ github.run_number }}
-        files: |
-         installer/*.exe     # or *.dmg on mac
-        env:
-        GITHUB_TOKEN: ${{ secrets.CV_PAT }}
-
+        files: installer/*.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
