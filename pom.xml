@@ -57,6 +57,7 @@
     </dependencies>
 
     <build>
+        <finalName>${project.name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -101,7 +102,6 @@
                 <javafx.platform>win</javafx.platform>
             </properties>
             <build>
-                <finalName>${project.name}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -183,6 +183,7 @@
             </activation>
             <properties>
                 <javafx.platform>mac</javafx.platform>
+                <arch.suffix>-Intel</arch.suffix>
             </properties>
             <build>
                 <plugins>
@@ -226,7 +227,7 @@
                                         <argument>--input</argument>
                                         <argument>${project.build.directory}</argument>
                                         <argument>--name</argument>
-                                        <argument>${project.name}</argument>
+                                        <argument>${project.name}${arch.suffix}</argument>
                                         <argument>--main-class</argument>
                                         <argument>${main.class}</argument>
                                         <argument>--main-jar</argument>
@@ -262,6 +263,7 @@
             </activation>
             <properties>
                 <javafx.platform>mac-aarch64</javafx.platform>
+                <arch.suffix>-AppleSilicon</arch.suffix>
             </properties>
             <build>
                 <plugins>
@@ -305,7 +307,7 @@
                                         <argument>--input</argument>
                                         <argument>${project.build.directory}</argument>
                                         <argument>--name</argument>
-                                        <argument>${project.name}</argument>
+                                        <argument>${project.name}${arch.suffix}</argument>
                                         <argument>--main-class</argument>
                                         <argument>${main.class}</argument>
                                         <argument>--main-jar</argument>

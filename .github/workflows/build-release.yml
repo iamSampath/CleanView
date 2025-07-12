@@ -11,10 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # This matrix now creates 3 separate jobs:
-        # 1. windows-latest
-        # 2. macos-13 (Intel)
-        # 3. macos-14 (Apple Silicon)
+        # Creates 3 separate jobs for Windows, macOS (Intel), and macOS (Apple Silicon)
         os: [windows-latest, macos-13, macos-14]
     runs-on: ${{ matrix.os }}
 
@@ -35,7 +32,7 @@ jobs:
     - name: Upload Installer Artifact
       uses: actions/upload-artifact@v4
       with:
-        # Creates a unique name for each build, e.g., "macos-13-installer"
+        # Creates a unique artifact for each OS build to prevent overwrites
         name: ${{ matrix.os }}-installer
         path: target/installer/*
 
@@ -63,6 +60,5 @@ jobs:
           Installers for Windows, macOS (Intel), and macOS (Apple Silicon) are attached below.
         files: all-artifacts/**/*
       env:
-        # Using the standard GITHUB_TOKEN is more secure and has the necessary permissions.
-        # If you must use a PAT, ensure it has `contents: write` permissions.
+        # Use the standard GITHUB_TOKEN for security and reliability
         GITHUB_TOKEN: ${{ secrets.CV_PAT }}

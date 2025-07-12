@@ -127,7 +127,7 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>${project.build.directory}/mods</outputDirectory>
+                  <outputDirectory>/Users/sampathkm/Desktop/codeRepo/CleanView/target/mods</outputDirectory>
                   <includeGroupIds>org.openjfx</includeGroupIds>
                   <stripVersion>true</stripVersion>
                 </configuration>
@@ -146,26 +146,26 @@
                   <goal>exec</goal>
                 </goals>
                 <configuration>
-                  <executable>${java.home}/bin/jpackage</executable>
+                  <executable>/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home/bin/jpackage</executable>
                   <arguments>
                     <argument>--type</argument>
                     <argument>DMG</argument>
                     <argument>--dest</argument>
-                    <argument>${project.build.directory}/installer</argument>
+                    <argument>/Users/sampathkm/Desktop/codeRepo/CleanView/target/installer</argument>
                     <argument>--input</argument>
-                    <argument>${project.build.directory}</argument>
+                    <argument>/Users/sampathkm/Desktop/codeRepo/CleanView/target</argument>
                     <argument>--name</argument>
-                    <argument>${project.name}</argument>
+                    <argument>CleanView</argument>
                     <argument>--main-class</argument>
-                    <argument>${main.class}</argument>
+                    <argument>com.sampath.pdfviewer.CleanView</argument>
                     <argument>--main-jar</argument>
-                    <argument>${project.build.finalName}.jar</argument>
+                    <argument>CleanView-1.0.jar</argument>
                     <argument>--module-path</argument>
-                    <argument>${project.build.directory}/mods</argument>
+                    <argument>/Users/sampathkm/Desktop/codeRepo/CleanView/target/mods</argument>
                     <argument>--add-modules</argument>
                     <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing</argument>
                     <argument>--app-version</argument>
-                    <argument>${project.version}</argument>
+                    <argument>1.0</argument>
                     <argument>--vendor</argument>
                     <argument>Medarametla Solutions</argument>
                     <argument>--icon</argument>
