@@ -9,10 +9,13 @@ on:
 jobs:
   build:
     strategy:
-      # Don't cancel other jobs if one fails
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest]
+        # This matrix now creates 3 separate jobs:
+        # 1. windows-latest
+        # 2. macos-13 (Intel)
+        # 3. macos-14 (Apple Silicon)
+        os: [windows-latest, macos-13, macos-14]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -27,18 +30,16 @@ jobs:
         cache: 'maven'
 
     - name: Build Application and Installer with Maven
-      # This single command uses the profiles in pom.xml to create the correct installer
       run: mvn -B clean package
 
     - name: Upload Installer Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ runner.os }}-installer
-        # This path points to where the jpackage command in the pom.xml saves the installer
+        # Creates a unique name for each build, e.g., "macos-13-installer"
+        name: ${{ matrix.os }}-installer
         path: target/installer/*
 
   release:
-    # This job runs only after all build jobs have successfully completed
     needs: build
     runs-on: ubuntu-latest
 
@@ -46,7 +47,6 @@ jobs:
     - name: Download all installer artifacts
       uses: actions/download-artifact@v4
       with:
-        # The path where all artifacts will be downloaded
         path: all-artifacts
 
     - name: Display structure of downloaded files
@@ -55,14 +55,14 @@ jobs:
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        # The tag and release name are generated dynamically
         tag_name: v1.0.${{ github.run_number }}
         name: CleanView v1.0.${{ github.run_number }}
         body: |
           New release of CleanView.
-          Installers for Windows and macOS are attached below.
-        # Upload all files from all subdirectories of the downloaded artifacts
+          
+          Installers for Windows, macOS (Intel), and macOS (Apple Silicon) are attached below.
         files: all-artifacts/**/*
       env:
-        # The default GITHUB_TOKEN has the required permissions to create a release
-        GITHUB_TOKEN: ${{ secrets.CV_PAT }}
+        # Using the standard GITHUB_TOKEN is more secure and has the necessary permissions.
+        # If you must use a PAT, ensure it has `contents: write` permissions.
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
