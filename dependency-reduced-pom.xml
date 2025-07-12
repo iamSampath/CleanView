@@ -110,7 +110,7 @@
       </properties>
     </profile>
     <profile>
-      <id>mac</id>
+      <id>mac-x86_64</id>
       <build>
         <plugins>
           <plugin>
@@ -178,6 +178,77 @@
       </build>
       <properties>
         <javafx.platform>mac</javafx.platform>
+      </properties>
+    </profile>
+    <profile>
+      <id>mac-aarch64</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.6.0</version>
+            <executions>
+              <execution>
+                <id>copy-javafx-mods-mac-aarch64</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/mods</outputDirectory>
+                  <includeGroupIds>org.openjfx</includeGroupIds>
+                  <stripVersion>true</stripVersion>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <id>jpackage-mac-aarch64</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>${java.home}/bin/jpackage</executable>
+                  <arguments>
+                    <argument>--type</argument>
+                    <argument>DMG</argument>
+                    <argument>--dest</argument>
+                    <argument>${project.build.directory}/installer</argument>
+                    <argument>--input</argument>
+                    <argument>${project.build.directory}</argument>
+                    <argument>--name</argument>
+                    <argument>${project.name}</argument>
+                    <argument>--main-class</argument>
+                    <argument>${main.class}</argument>
+                    <argument>--main-jar</argument>
+                    <argument>${project.build.finalName}.jar</argument>
+                    <argument>--module-path</argument>
+                    <argument>${project.build.directory}/mods</argument>
+                    <argument>--add-modules</argument>
+                    <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing,java.logging</argument>
+                    <argument>--app-version</argument>
+                    <argument>${project.version}</argument>
+                    <argument>--vendor</argument>
+                    <argument>Medarametla Solutions</argument>
+                    <argument>--icon</argument>
+                    <argument>src/main/resources/icon.icns</argument>
+                    <argument>--license-file</argument>
+                    <argument>src/main/resources/license.txt</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <javafx.platform>mac-aarch64</javafx.platform>
       </properties>
     </profile>
   </profiles>

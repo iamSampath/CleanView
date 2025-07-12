@@ -1,3 +1,4 @@
+# .github/workflows/build-and-release.yml
 name: Build and Release Installers
 
 on:
@@ -8,6 +9,8 @@ on:
 jobs:
   build:
     strategy:
+      # Don't cancel other jobs if one fails
+      fail-fast: false
       matrix:
         os: [windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
@@ -19,69 +22,47 @@ jobs:
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        distribution: temurin
-        java-version: 21
+        distribution: 'temurin'
+        java-version: '21'
+        cache: 'maven'
 
-    - name: Verify Maven
-      run: mvn -v
-
-    - name: Build App
-      run: mvn clean install
-
-    - name: Package with jpackage (Windows)
-      if: runner.os == 'Windows'
-      shell: cmd
-      run: |
-        jpackage --type exe ^
-        --input target ^
-        --dest installer ^
-        --name CleanView ^
-        --main-jar CleanView-1.0.jar ^
-        --main-class com.sampath.pdfviewer.MainApp ^
-        --icon src/main/resources/icon.ico ^
-        --win-menu ^
-        --win-shortcut ^
-        --win-dir-chooser ^
-        --win-per-user-install
-
-    - name: Package with jpackage (macOS)
-      if: runner.os == 'macOS'
-      run: |
-        jpackage \
-          --type dmg \
-          --input target \
-          --dest installer \
-          --name CleanView \
-          --main-jar CleanView-1.0.jar \
-          --main-class com.sampath.pdfviewer.MainApp \
-          --icon src/main/resources/icon.icns \
-          --mac-package-name CleanView \
-          --mac-package-identifier com.cleanview.app
+    - name: Build Application and Installer with Maven
+      # This single command uses the profiles in pom.xml to create the correct installer
+      run: mvn -B clean package
 
     - name: Upload Installer Artifact
       uses: actions/upload-artifact@v4
       with:
         name: ${{ runner.os }}-installer
-        path: installer/*
-        
+        # This path points to where the jpackage command in the pom.xml saves the installer
+        path: target/installer/*
+
   release:
+    # This job runs only after all build jobs have successfully completed
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download all artifacts
+    - name: Download all installer artifacts
       uses: actions/download-artifact@v4
       with:
+        # The path where all artifacts will be downloaded
         path: all-artifacts
 
-    - name: Show downloaded files
+    - name: Display structure of downloaded files
       run: ls -R all-artifacts
 
-    - name: Upload to GitHub Release
+    - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
+        # The tag and release name are generated dynamically
         tag_name: v1.0.${{ github.run_number }}
-        name: CleanView Release v1.0.${{ github.run_number }}
-        files: all-artifacts/**/*  # Pick up both .exe and .dmg
+        name: CleanView v1.0.${{ github.run_number }}
+        body: |
+          New release of CleanView.
+          Installers for Windows and macOS are attached below.
+        # Upload all files from all subdirectories of the downloaded artifacts
+        files: all-artifacts/**/*
       env:
+        # The default GITHUB_TOKEN has the required permissions to create a release
         GITHUB_TOKEN: ${{ secrets.CV_PAT }}
