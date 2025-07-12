@@ -45,53 +45,35 @@
 
 ### ✅ Option 1: Download from [Releases](https://github.com/iamSampath/CleanView/releases)
 
+### ✅ Option 1: Download from [Releases](https://github.com/iamSampath/CleanView/releases)
+
 1. Go to the [**Releases**](https://github.com/iamSampath/CleanView/releases) page.
-2. Download and extract the latest `CleanView-1.0.exe` file from SourceCode.Zip.
-3. Double-click to launch the installer.
+2. Download the installer for your operating system:
+   - **Windows**:  `CleanView-1.0.exe` 
+   - **macOS (Apple Silicon)**:  `CleanView-AppleSilicon-1.0.dmg`
+   - **macOS (Intel)**:  `CleanView-Intel-1.0.dmg`
+3. Launch the installer:
+   - On **Windows**, double-click the `.exe` file
+   - On **macOS**, open the `.dmg` file and drag **CleanView** to the Applications folder
 4. Follow the installation prompts:
-   - Choose install location
-   - (Optional) Create a desktop shortcut
+   - Choose install location (Windows)
+   - (Optional) Create a desktop shortcut (Windows)
    - (Optional) Set **CleanView** as the default PDF viewer
 
 > 💡 Once installed, you can open PDF files by double-clicking them or using “Open With → CleanView” from the file menu.
-
+> 
 ---
 
 ### 🛠 Option 2: Manual Build (For Developers)
 
 If you'd like to build the application yourself please read the below instructions:
 
-## 🧪 How to Build
+## 🧪 Building installer locally
 
 ```bash
 git clone https://github.com/iamSampath/CleanView.git
 cd CleanView
 mvn clean package
-```
-
-To run the app with JavaFX modules:
-
-```bash
-java --module-path "path/to/javafx-sdk/lib" --add-modules javafx.controls,javafx.swing -jar target/CleanView-1.0.jar
-```
-
----
-
-## 🛠 Packaging with `jpackage`
-
-Make sure to run:
-
-```bash
-jlink ^
-  --module-path "%JAVA_HOME%/jmods;C:/javafx-jmods-21.0.7" ^
-  --add-modules java.base,java.desktop,javafx.controls,javafx.graphics,javafx.swing ^
-  --output target/runtime ^
-  --strip-debug ^
-  --compress=2 ^
-  --no-header-files ^
-  --no-man-pages
-
-mvn jpackage:jpackage
 ```
 
 Output will be in: `target/installer`
@@ -102,14 +84,15 @@ Output will be in: `target/installer`
 
 CleanView currently supports the following operating systems:
 
-| Platform     | Status        | Details                                      |
-|--------------|---------------|----------------------------------------------|
-| 🪟 Windows    | ✅ Supported   | Installer (.exe) available in [Releases](#)  |
-| 🍎 macOS      | 🔜 Coming Soon | `.dmg` version under active development       |
-| 🐧 Linux      | ❌ Not Supported | May be considered in future                 |
+| Platform     | Status        | Details                                          |
+|--------------|---------------|--------------------------------------------------|
+| 🪟 Windows    | ✅ Supported   | Installer (`.exe`) available in [Releases](#)    |
+| 🍎 macOS      | ✅ Supported   | Installer (`.dmg`) available in [Releases](#)    |
+| 🐧 Linux      | ❌ Not Supported | May be considered in the future                 |
 
-> ℹ️ **Note:** CleanView is fully functional on Windows. macOS support is in progress and expected in a future update.
 
+> ℹ️ **Note:** CleanView is fully functional on both **Windows** and **macOS**.  
+> Linux support is currently not available but may be considered in the future.
 
 ## 🧠 Author
 
