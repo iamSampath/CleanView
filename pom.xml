@@ -25,7 +25,6 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
@@ -50,7 +49,6 @@
             <version>${javafx.version}</version>
             <classifier>${javafx.platform}</classifier>
         </dependency>
-
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
@@ -103,7 +101,27 @@
                 <javafx.platform>win</javafx.platform>
             </properties>
             <build>
+                <finalName>${project.name}</finalName>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-javafx-mods</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/mods</outputDirectory>
+                                    <includeGroupIds>org.openjfx</includeGroupIds>
+                                    <stripVersion>true</stripVersion>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -130,6 +148,10 @@
                                         <argument>${main.class}</argument>
                                         <argument>--main-jar</argument>
                                         <argument>${project.build.finalName}.jar</argument>
+                                        <argument>--module-path</argument>
+                                        <argument>${project.build.directory}/mods</argument>
+                                        <argument>--add-modules</argument>
+                                        <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing</argument>
                                         <argument>--java-options</argument>
                                         <argument>-Dfile.encoding=UTF-8</argument>
                                         <argument>--app-version</argument>
@@ -165,6 +187,25 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-javafx-mods-mac</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/mods</outputDirectory>
+                                    <includeGroupIds>org.openjfx</includeGroupIds>
+                                    <stripVersion>true</stripVersion>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>3.2.0</version>
@@ -190,6 +231,10 @@
                                         <argument>${main.class}</argument>
                                         <argument>--main-jar</argument>
                                         <argument>${project.build.finalName}.jar</argument>
+                                        <argument>--module-path</argument>
+                                        <argument>${project.build.directory}/mods</argument>
+                                        <argument>--add-modules</argument>
+                                        <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing</argument>
                                         <argument>--app-version</argument>
                                         <argument>${project.version}</argument>
                                         <argument>--vendor</argument>
@@ -221,6 +266,25 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-javafx-mods-mac-aarch64</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/mods</outputDirectory>
+                                    <includeGroupIds>org.openjfx</includeGroupIds>
+                                    <stripVersion>true</stripVersion>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>3.2.0</version>
@@ -246,6 +310,10 @@
                                         <argument>${main.class}</argument>
                                         <argument>--main-jar</argument>
                                         <argument>${project.build.finalName}.jar</argument>
+                                        <argument>--module-path</argument>
+                                        <argument>${project.build.directory}/mods</argument>
+                                        <argument>--add-modules</argument>
+                                        <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing</argument>
                                         <argument>--app-version</argument>
                                         <argument>${project.version}</argument>
                                         <argument>--vendor</argument>

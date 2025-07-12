@@ -39,13 +39,14 @@
     <profile>
       <id>windows</id>
       <build>
+        <finalName>${project.name}</finalName>
         <plugins>
           <plugin>
             <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.6.0</version>
+            <version>3.6.1</version>
             <executions>
               <execution>
-                <id>copy-javafx-mods-win</id>
+                <id>copy-javafx-mods</id>
                 <phase>prepare-package</phase>
                 <goals>
                   <goal>copy-dependencies</goal>
@@ -87,7 +88,9 @@
                     <argument>--module-path</argument>
                     <argument>${project.build.directory}/mods</argument>
                     <argument>--add-modules</argument>
-                    <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing,java.logging</argument>
+                    <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing</argument>
+                    <argument>--java-options</argument>
+                    <argument>-Dfile.encoding=UTF-8</argument>
                     <argument>--app-version</argument>
                     <argument>${project.version}</argument>
                     <argument>--vendor</argument>
@@ -115,7 +118,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.6.0</version>
+            <version>3.6.1</version>
             <executions>
               <execution>
                 <id>copy-javafx-mods-mac</id>
@@ -137,7 +140,7 @@
             <version>3.2.0</version>
             <executions>
               <execution>
-                <id>jpackage-mac</id>
+                <id>jpackage-mac-x86_64</id>
                 <phase>package</phase>
                 <goals>
                   <goal>exec</goal>
@@ -160,7 +163,7 @@
                     <argument>--module-path</argument>
                     <argument>${project.build.directory}/mods</argument>
                     <argument>--add-modules</argument>
-                    <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing,java.logging</argument>
+                    <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing</argument>
                     <argument>--app-version</argument>
                     <argument>${project.version}</argument>
                     <argument>--vendor</argument>
@@ -186,7 +189,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.6.0</version>
+            <version>3.6.1</version>
             <executions>
               <execution>
                 <id>copy-javafx-mods-mac-aarch64</id>
@@ -231,7 +234,7 @@
                     <argument>--module-path</argument>
                     <argument>${project.build.directory}/mods</argument>
                     <argument>--add-modules</argument>
-                    <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing,java.logging</argument>
+                    <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing</argument>
                     <argument>--app-version</argument>
                     <argument>${project.version}</argument>
                     <argument>--vendor</argument>
