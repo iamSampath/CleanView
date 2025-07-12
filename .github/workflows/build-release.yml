@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         # Creates 3 separate jobs for Windows, macOS (Intel), and macOS (Apple Silicon)
-        os: [Windows, macOS-Intel, macOS-ASC]
+        os: [windows-latest, macos-13, macos-14]
     runs-on: ${{ matrix.os }}
 
     steps:
