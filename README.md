@@ -50,8 +50,8 @@
 1. Go to the [**Releases**](https://github.com/iamSampath/CleanView/releases) page.
 2. Download the installer for your operating system:
    - **Windows**:  `CleanView-1.0.exe` 
-   - **macOS (Apple Silicon)**:  `CleanView-AppleSilicon-1.0.dmg`
    - **macOS (Intel)**:  `CleanView-Intel-1.0.dmg`
+   - **macOS (Apple Silicon)**:  `CleanView-AppleSilicon-1.0.dmg`
 3. Launch the installer:
    - On **Windows**, double-click the `.exe` file
    - On **macOS**, open the `.dmg` file and drag **CleanView** to the Applications folder

@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         # Creates 3 separate jobs for Windows, macOS (Intel), and macOS (Apple Silicon)
-        os: [windows-latest, macos-13, macos-14]
+        os: [Windows, macOS-Intel, macOS-ASC]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -33,7 +33,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         # Creates a unique artifact for each OS build to prevent overwrites
-        name: ${{ matrix.os }}-installer
+        name: ${{ matrix.os }}
         path: target/installer/*
 
   release:
