@@ -65,4 +65,4 @@ jobs:
       env:
         # Using the standard GITHUB_TOKEN is more secure and has the necessary permissions.
         # If you must use a PAT, ensure it has `contents: write` permissions.
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CV_PAT }}
