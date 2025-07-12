@@ -19,7 +19,6 @@
     </properties>
 
     <dependencies>
-        <!-- JUnit for testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -27,7 +26,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JavaFX Dependencies - Classifier will be set in profiles -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
@@ -53,7 +51,6 @@
             <classifier>${javafx.platform}</classifier>
         </dependency>
 
-        <!-- PDFBox Dependency (non-modular) -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
@@ -63,7 +60,6 @@
 
     <build>
         <plugins>
-            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -73,7 +69,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Shade Plugin: Creates the fat JAR with non-modular dependencies -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -97,9 +92,7 @@
         </plugins>
     </build>
 
-    <!-- OS-Specific Profiles for creating native installers -->
     <profiles>
-        <!-- Windows Profile -->
         <profile>
             <id>windows</id>
             <activation>
@@ -112,7 +105,6 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- Step 1: Copy ONLY the modular JavaFX dependencies -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
@@ -133,7 +125,6 @@
                         </executions>
                     </plugin>
 
-                    <!-- Step 2: Call jpackage directly using the exec plugin for full control -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -172,7 +163,6 @@
                                         <argument>--win-shortcut</argument>
                                         <argument>--icon</argument>
                                         <argument>src/main/resources/icon.ico</argument>
-                                        <!-- ** NEW **: Add the license file -->
                                         <argument>--license-file</argument>
                                         <argument>src/main/resources/license.txt</argument>
                                     </arguments>
@@ -184,12 +174,12 @@
             </build>
         </profile>
 
-        <!-- macOS Profile -->
         <profile>
-            <id>mac</id>
+            <id>mac-x86_64</id>
             <activation>
                 <os>
                     <family>mac</family>
+                    <arch>x86_64</arch>
                 </os>
             </activation>
             <properties>
@@ -197,7 +187,6 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- Step 1: Copy ONLY the modular JavaFX dependencies -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
@@ -217,8 +206,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
-                    <!-- Step 2: Call jpackage directly using the exec plugin for full control -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -255,7 +242,85 @@
                                         <argument>Medarametla Solutions</argument>
                                         <argument>--icon</argument>
                                         <argument>src/main/resources/icon.icns</argument>
-                                        <!-- ** NEW **: Add the license file -->
+                                        <argument>--license-file</argument>
+                                        <argument>src/main/resources/license.txt</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>mac-aarch64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javafx.platform>mac-aarch64</javafx.platform>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-javafx-mods-mac-aarch64</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/mods</outputDirectory>
+                                    <includeGroupIds>org.openjfx</includeGroupIds>
+                                    <stripVersion>true</stripVersion>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>jpackage-mac-aarch64</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${java.home}/bin/jpackage</executable>
+                                    <arguments>
+                                        <argument>--type</argument>
+                                        <argument>DMG</argument>
+                                        <argument>--dest</argument>
+                                        <argument>${project.build.directory}/installer</argument>
+                                        <argument>--input</argument>
+                                        <argument>${project.build.directory}</argument>
+                                        <argument>--name</argument>
+                                        <argument>${project.name}</argument>
+                                        <argument>--main-class</argument>
+                                        <argument>${main.class}</argument>
+                                        <argument>--main-jar</argument>
+                                        <argument>${project.build.finalName}.jar</argument>
+                                        <argument>--module-path</argument>
+                                        <argument>${project.build.directory}/mods</argument>
+                                        <argument>--add-modules</argument>
+                                        <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing,java.logging</argument>
+                                        <argument>--app-version</argument>
+                                        <argument>${project.version}</argument>
+                                        <argument>--vendor</argument>
+                                        <argument>Medarametla Solutions</argument>
+                                        <argument>--icon</argument>
+                                        <argument>src/main/resources/icon.icns</argument>
                                         <argument>--license-file</argument>
                                         <argument>src/main/resources/license.txt</argument>
                                     </arguments>
