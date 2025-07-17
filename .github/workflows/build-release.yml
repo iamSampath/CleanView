@@ -71,14 +71,20 @@ jobs:
       env:
         LABEL: ${{ env.LABEL }}
 
-    - name: Generate CHANGELOG.md
+    - name: Generate or update CHANGELOG.md
       run: |
         echo "## [v${{ env.VERSION }}] - $(date +'%Y-%m-%d')" >> tmp_changelog.txt
         echo "" >> tmp_changelog.txt
         git log -n 10 --pretty=format:"- %s" >> tmp_changelog.txt
         echo -e "\n" >> tmp_changelog.txt
-        cat tmp_changelog.txt CHANGELOG.md > CHANGELOG.md.new
+
+        if [ -f CHANGELOG.md ]; then
+          cat tmp_changelog.txt CHANGELOG.md > CHANGELOG.md.new
+        else
+          cat tmp_changelog.txt > CHANGELOG.md.new
+        fi
         mv CHANGELOG.md.new CHANGELOG.md
+
 
     - name: Commit version + changelog
       run: |
