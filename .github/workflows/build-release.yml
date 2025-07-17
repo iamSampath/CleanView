@@ -1,4 +1,4 @@
-name: Build and Release Installers
+name: Build and Release CleanView
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Checkout Code
+    - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up JDK 21
@@ -38,44 +38,63 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.CV_PAT }}
 
-    - name: Read version from file
-      id: read_version
+    - name: Get PR Label for bump
+      id: get_label
+      run: |
+        LABEL=$(curl -s -H "Authorization: token ${{ secrets.CV_PAT }}" \
+          https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls \
+          | jq -r '.[0].labels[].name' | grep -E 'major|minor|patch' || echo patch)
+        echo "LABEL=$LABEL" >> $GITHUB_ENV
+        echo "Using label: $LABEL"
+
+    - name: Auto-bump version.txt
+      id: bump
       run: |
         VERSION=$(cat version.txt)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "VERSION_TAG=v$VERSION" >> $GITHUB_ENV
+        IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
 
-    - name: Check if Git tag already exists
-      id: check_tag
-      run: |
-        if git rev-parse "$VERSION_TAG" >/dev/null 2>&1; then
-          echo "Tag $VERSION_TAG already exists. Skipping release."
-          echo "EXISTS=true" >> $GITHUB_ENV
-        else
-          echo "EXISTS=false" >> $GITHUB_ENV
-        fi
+        case "$LABEL" in
+          major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+          minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+          patch) PATCH=$((PATCH + 1)) ;;
+        esac
+
+        NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+        echo "$NEW_VERSION" > version.txt
+        echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        echo "VERSION_TAG=v$NEW_VERSION" >> $GITHUB_ENV
       env:
-        VERSION_TAG: ${{ env.VERSION_TAG }}
+        LABEL: ${{ env.LABEL }}
 
-    - name: Exit if tag exists
-      if: env.EXISTS == 'true'
-      run: exit 0
+    - name: Generate CHANGELOG.md
+      run: |
+        echo "## [v${{ env.VERSION }}] - $(date +'%Y-%m-%d')" >> tmp_changelog.txt
+        echo "" >> tmp_changelog.txt
+        git log -n 10 --pretty=format:"- %s" >> tmp_changelog.txt
+        echo -e "\n" >> tmp_changelog.txt
+        cat tmp_changelog.txt CHANGELOG.md > CHANGELOG.md.new
+        mv CHANGELOG.md.new CHANGELOG.md
+
+    - name: Commit version + changelog
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add version.txt CHANGELOG.md
+        git commit -m "🔼 Bump version to ${{ env.VERSION }} and update changelog"
+        git push origin main
 
     - name: Download all installer artifacts
       uses: actions/download-artifact@v4
       with:
         path: all-artifacts
 
-    - name: Display structure of downloaded files
-      run: ls -R all-artifacts
-
     - name: Create Git Tag
       run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
         git tag $VERSION_TAG
         git push origin $VERSION_TAG
       env:
@@ -86,15 +105,7 @@ jobs:
       with:
         tag_name: ${{ env.VERSION_TAG }}
         name: CleanView ${{ env.VERSION_TAG }}
-        body: |
-          🚀 New CleanView Release - ${{ env.VERSION_TAG }}
-
-          Installers for:
-          - 🪟 Windows
-          - 🍎 macOS Intel
-          - 🍎 macOS Apple Silicon
-
-          🎯 Keep it Clean. Keep it Fast.
+        body_path: tmp_changelog.txt
         files: all-artifacts/**/*
       env:
         GITHUB_TOKEN: ${{ secrets.CV_PAT }}
