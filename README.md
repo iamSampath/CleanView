@@ -1,4 +1,4 @@
-# 📘 CleanView - Privacy first, Minimalist PDF Viewer
+# 📘 CleanView - Privacy first PDF Viewer
 
 **CleanView** is a modern, lightweight, and fast PDF viewer built using JavaFX and Apache PDFBox. Designed with clean aesthetics and high usability in mind, it provides essential PDF features without the clutter of bloated applications.
 
