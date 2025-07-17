@@ -81,17 +81,17 @@ jobs:
         if [ -f CHANGELOG.md ]; then
           cat tmp_changelog.txt CHANGELOG.md > CHANGELOG.md.new
         else
-          cat tmp_changelog.txt > CHANGELOG.md.new
+          cp tmp_changelog.txt CHANGELOG.md.new
         fi
-        mv CHANGELOG.md.new CHANGELOG.md
 
+        mv CHANGELOG.md.new CHANGELOG.md
 
     - name: Commit version + changelog
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git add version.txt CHANGELOG.md
-        git commit -m "🔼 Bump version to ${{ env.VERSION }} and update changelog"
+        git commit -m "🔼 Bump version to ${{ env.VERSION }} and update changelog [skip ci]"
         git push origin main
 
     - name: Download all installer artifacts
