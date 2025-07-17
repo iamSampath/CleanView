@@ -1,4 +1,3 @@
-# .github/workflows/build-and-release.yml
 name: Build and Release Installers
 
 on:
@@ -11,7 +10,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Creates 3 separate jobs for Windows, macOS (Intel), and macOS (Apple Silicon)
         os: [windows-latest, macos-13, macos-14]
     runs-on: ${{ matrix.os }}
 
@@ -32,7 +30,6 @@ jobs:
     - name: Upload Installer Artifact
       uses: actions/upload-artifact@v4
       with:
-        # Creates a unique artifact for each OS build to prevent overwrites
         name: ${{ matrix.os }}
         path: target/installer/*
 
@@ -41,6 +38,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Read version from file
+      id: read_version
+      run: |
+        VERSION=$(cat version.txt)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "VERSION_TAG=v$VERSION" >> $GITHUB_ENV
+
+    - name: Check if Git tag already exists
+      id: check_tag
+      run: |
+        if git rev-parse "$VERSION_TAG" >/dev/null 2>&1; then
+          echo "Tag $VERSION_TAG already exists. Skipping release."
+          echo "EXISTS=true" >> $GITHUB_ENV
+        else
+          echo "EXISTS=false" >> $GITHUB_ENV
+        fi
+      env:
+        VERSION_TAG: ${{ env.VERSION_TAG }}
+
+    - name: Exit if tag exists
+      if: env.EXISTS == 'true'
+      run: exit 0
+
     - name: Download all installer artifacts
       uses: actions/download-artifact@v4
       with:
@@ -49,16 +72,29 @@ jobs:
     - name: Display structure of downloaded files
       run: ls -R all-artifacts
 
+    - name: Create Git Tag
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag $VERSION_TAG
+        git push origin $VERSION_TAG
+      env:
+        VERSION_TAG: ${{ env.VERSION_TAG }}
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: v1.0.${{ github.run_number }}
-        name: CleanView v1.0.${{ github.run_number }}
+        tag_name: ${{ env.VERSION_TAG }}
+        name: CleanView ${{ env.VERSION_TAG }}
         body: |
-          New release of CleanView.
-          
-          Installers for Windows, macOS (Intel), and macOS (Apple Silicon) are attached below.
+          🚀 New CleanView Release - ${{ env.VERSION_TAG }}
+
+          Installers for:
+          - 🪟 Windows
+          - 🍎 macOS Intel
+          - 🍎 macOS Apple Silicon
+
+          🎯 Keep it Clean. Keep it Fast.
         files: all-artifacts/**/*
       env:
-        # Use the standard GITHUB_TOKEN for security and reliability
         GITHUB_TOKEN: ${{ secrets.CV_PAT }}
