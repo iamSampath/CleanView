@@ -1013,6 +1013,7 @@ public class CleanView extends Application {
         if (args.length > 0) {
             fileToOpen = args[0];
         }
+        System.out.println(args[0]);
         launch(args);
     }
-}
+}   

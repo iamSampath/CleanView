@@ -4,8 +4,9 @@
   <groupId>com.sampath.pdfviewer</groupId>
   <artifactId>CleanView</artifactId>
   <name>CleanView</name>
-  <version>1.0</version>
+  <version>2.0</version>
   <build>
+    <finalName>${project.name}</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -39,7 +40,6 @@
     <profile>
       <id>windows</id>
       <build>
-        <finalName>${project.name}</finalName>
         <plugins>
           <plugin>
             <artifactId>maven-dependency-plugin</artifactId>
@@ -127,7 +127,7 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>/Users/sampathkm/Desktop/codeRepo/CleanView/target/mods</outputDirectory>
+                  <outputDirectory>${project.build.directory}/mods</outputDirectory>
                   <includeGroupIds>org.openjfx</includeGroupIds>
                   <stripVersion>true</stripVersion>
                 </configuration>
@@ -146,26 +146,26 @@
                   <goal>exec</goal>
                 </goals>
                 <configuration>
-                  <executable>/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home/bin/jpackage</executable>
+                  <executable>${java.home}/bin/jpackage</executable>
                   <arguments>
                     <argument>--type</argument>
                     <argument>DMG</argument>
                     <argument>--dest</argument>
-                    <argument>/Users/sampathkm/Desktop/codeRepo/CleanView/target/installer</argument>
+                    <argument>${project.build.directory}/installer</argument>
                     <argument>--input</argument>
-                    <argument>/Users/sampathkm/Desktop/codeRepo/CleanView/target</argument>
+                    <argument>${project.build.directory}</argument>
                     <argument>--name</argument>
-                    <argument>CleanView</argument>
+                    <argument>${project.name}${arch.suffix}</argument>
                     <argument>--main-class</argument>
-                    <argument>com.sampath.pdfviewer.CleanView</argument>
+                    <argument>${main.class}</argument>
                     <argument>--main-jar</argument>
-                    <argument>CleanView-1.0.jar</argument>
+                    <argument>${project.build.finalName}.jar</argument>
                     <argument>--module-path</argument>
-                    <argument>/Users/sampathkm/Desktop/codeRepo/CleanView/target/mods</argument>
+                    <argument>${project.build.directory}/mods</argument>
                     <argument>--add-modules</argument>
                     <argument>javafx.base,javafx.controls,javafx.graphics,javafx.swing</argument>
                     <argument>--app-version</argument>
-                    <argument>1.0</argument>
+                    <argument>${project.version}</argument>
                     <argument>--vendor</argument>
                     <argument>Medarametla Solutions</argument>
                     <argument>--icon</argument>
@@ -181,6 +181,7 @@
       </build>
       <properties>
         <javafx.platform>mac</javafx.platform>
+        <arch.suffix>-Intel</arch.suffix>
       </properties>
     </profile>
     <profile>
@@ -226,7 +227,7 @@
                     <argument>--input</argument>
                     <argument>${project.build.directory}</argument>
                     <argument>--name</argument>
-                    <argument>${project.name}</argument>
+                    <argument>${project.name}${arch.suffix}</argument>
                     <argument>--main-class</argument>
                     <argument>${main.class}</argument>
                     <argument>--main-jar</argument>
@@ -252,6 +253,7 @@
       </build>
       <properties>
         <javafx.platform>mac-aarch64</javafx.platform>
+        <arch.suffix>-AppleSilicon</arch.suffix>
       </properties>
     </profile>
   </profiles>
