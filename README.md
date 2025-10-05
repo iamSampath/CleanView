@@ -40,10 +40,8 @@
 - Can be launched from terminal or by double-clicking `.exe`
 - Supports setting CleanView as the default PDF viewer
 - Drag-and-drop support (in roadmap)
-- 
-## 🚀 Installation (End Users)
 
-### ✅ Option 1: Download from [Releases](https://github.com/iamSampath/CleanView/releases)
+## 🚀 Installation (End Users)
 
 ### ✅ Option 1: Download from [Releases](https://github.com/iamSampath/CleanView/releases)
 
@@ -61,7 +59,7 @@
    - (Optional) Set **CleanView** as the default PDF viewer
 
 > 💡 Once installed, you can open PDF files by double-clicking them or using “Open With → CleanView” from the file menu.
-> 
+
 ---
 
 ### 🛠 Option 2: Manual Build (For Developers)
